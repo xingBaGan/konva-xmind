@@ -1,10 +1,14 @@
-import { reactive, type FunctionalComponent, defineExpose } from 'vue'
+import { reactive, defineComponent, inject, computed } from 'vue'
+import { colorsSymbol } from '../context/styleContext'
+import { lighten } from 'polished'
 type MindMapNode = {
   text?: string,
   x?: number,
   y?: number,
   nodeColor?: string,
   textColor?: string,
+  children?: MindMapNode[],
+  sequence: string,
 }
 
 function getTextWidth(text: string, font: string) {
@@ -27,13 +31,54 @@ function getTextHeight(font: string) {
 
 const minNodeWidth = 100;
 const minNodeHeight = 50;
-const MindMapNode: FunctionalComponent<MindMapNode> = (
-  props,
-  context
-) => {
+
+const props = {
+  text: {
+    type: String,
+    required: false
+  },
+  x: {
+    type: Number,
+    default: 0,
+  },
+  y: {
+    type: Number,
+    default: 0,
+  },
+  nodeColor: {
+    type: String,
+  },
+  textColor: {
+    type: String,
+  },
+  sequence: {
+    type: String,
+  }
+}
+
+export interface IPoint {
+  x: number;
+  y: number;
+}
+
+export enum NodePositionType {
+  TOP_LEFT,
+  TOP_RIGHT,
+  BOTTOM_LEFT,
+  BOTTOM_RIGHT,
+  TOP,
+  BOTTOM,
+  LEFT,
+  RIGHT,
+  CENTER,
+}
+// export default MindMapNode;
+export default defineComponent<MindMapNode>((props, {
+  expose,
+}) => {
   const nodeX = props.x || 0;
   const nodeY = props.y || 0;
-
+  const colorArr: string[] = inject(colorsSymbol) || [];
   const nodePadding = 5;
   const fontFamily = 'Arial'
   const nodeHeight = minNodeHeight;
@@ -45,9 +90,19 @@ const MindMapNode: FunctionalComponent<MindMapNode> = (
   const contentLength = getTextWidth(content, fontSizeAndFamily);
   const nodeWidth = Math.max(minNodeWidth, (contentLength + nodePadding * 2));
   const textLeftOffset = (nodeWidth - (contentLength + nodePadding * 2)) / 2;
+  const splitArr = props.sequence.split('-');
+  let nodeColor;
+  const mainColorIndex: number = Number(splitArr[1]);
+  if (splitArr.length == 1) {
+    nodeColor = colorArr[0];
+  } else if (splitArr.length == 2) {
+    nodeColor = colorArr[mainColorIndex];
+  } else {
+    nodeColor = lighten(0.15, colorArr[mainColorIndex]);
+  }
 
   const nodeStyle = {
-    fill: props.nodeColor || '#000229',
+    fill: nodeColor || props.nodeColor || '#000229',
     stroke: 'black',
     strokeWidth: 0,
     cornerRadius: 6,
@@ -77,41 +132,73 @@ const MindMapNode: FunctionalComponent<MindMapNode> = (
     ...textStyle,
   });
 
-  const getBorderCoordinate = () => {
-    return {
-      x: nodeX,
-      y: nodeY,
+  const level = computed(()=> props.sequence.split('-').length);
+  console.log(level, props.text);
+
+  const getBorderCoordinate = (type: NodePositionType): IPoint => {
+    switch (type) {
+      case NodePositionType.TOP_LEFT:
+        return {
+          x: nodeX,
+          y: nodeY,
+        }
+      case NodePositionType.TOP_RIGHT:
+        return {
+          x: nodeX + nodeWidth,
+          y: nodeY,
+        }
+      case NodePositionType.BOTTOM_LEFT:
+        return {
+          x: nodeX,
+          y: nodeY + nodeHeight,
+        }
+      case NodePositionType.BOTTOM_RIGHT:
+        return {
+          x: nodeX + nodeWidth,
+          y: nodeY + nodeHeight,
+        }
+      case NodePositionType.TOP:
+        return {
+          x: nodeX + nodeWidth / 2,
+          y: nodeY,
+        }
+      case NodePositionType.LEFT:
+        return {
+          x: nodeX,
+          y: nodeY + nodeHeight / 2,
+        }
+      case NodePositionType.RIGHT:
+        return {
+          x: nodeX + nodeWidth,
+          y: nodeY + nodeHeight / 2,
+        }
+      case NodePositionType.BOTTOM:
+        return {
+          x: nodeX + nodeWidth / 2,
+          y: nodeY + nodeHeight,
+        }
+      default:
+        return {
+          x: nodeX + nodeWidth,
+          y: nodeY + nodeHeight,
+        }
     }
   }
 
+  expose({
+    getBorderCoordinate,
+    text: props.text
+  });
 
-  return (
+  return () => (
     <v-group>
       <v-rect config={rect}></v-rect>
       <v-text config={text}></v-text>
     </v-group>
   )
-}
-
-MindMapNode.props = {
-  text: {
-    type: String,
-    required: false
-  },
-  x: {
-    type: Number,
-    default: 0,
-  },
-  y: {
-    type: Number,
-    default: 0,
-  },
-  nodeColor: {
-    type: String,
-  },
-  textColor: {
-    type: String,
+},
+  {
+    props,
+    name: 'MindMapNode',
   }
-}
-
-export default MindMapNode;
+);
