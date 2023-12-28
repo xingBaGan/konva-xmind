@@ -9,6 +9,8 @@ type MindMapNode = {
   textColor?: string,
   children?: MindMapNode[],
   sequence: string,
+  id: string,
+  ['onUpdate:boundaries']?: (boundaries: number[]) => void,
 }
 
 function getTextWidth(text: string, font: string) {
@@ -29,8 +31,8 @@ function getTextHeight(font: string) {
   return metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
 }
 
-const minNodeWidth = 100;
-const minNodeHeight = 50;
+const minNodeWidth = 70;
+const minNodeHeight = 40;
 
 const props = {
   text: {
@@ -52,6 +54,9 @@ const props = {
     type: String,
   },
   sequence: {
+    type: String,
+  },
+  id: {
     type: String,
   }
 }
@@ -75,14 +80,18 @@ export enum NodePositionType {
 // export default MindMapNode;
 export default defineComponent<MindMapNode>((props, {
   expose,
+  emit,
 }) => {
+  // console.log('node props',props)
   const nodeX = props.x || 0;
   const nodeY = props.y || 0;
   const colorArr: string[] = inject(colorsSymbol) || [];
   const nodePadding = 5;
   const fontFamily = 'Arial'
   const nodeHeight = minNodeHeight;
-  const fontSize = 18;
+  const initialFontSize = 18;
+  const level = computed(()=> props.sequence.split('-').length);
+  const fontSize = computed(()=> initialFontSize  - (level.value)).value;
   const fontSizeAndFamily = `${fontSize}px ${fontFamily}`;
   const content = props.text || '';
   const fontHeight = getTextHeight(fontSizeAndFamily);
@@ -123,6 +132,7 @@ export default defineComponent<MindMapNode>((props, {
     ...nodeStyle
   });
 
+  emit('update:boundaries', [nodeX, nodeY, nodeWidth, nodeHeight] as number[]);
   const text = reactive({
     x: nodeX + textLeftOffset,
     y: nodeY + textTopOffset,
@@ -132,8 +142,6 @@ export default defineComponent<MindMapNode>((props, {
     ...textStyle,
   });
 
-  const level = computed(()=> props.sequence.split('-').length);
-  console.log(level, props.text);
 
   const getBorderCoordinate = (type: NodePositionType): IPoint => {
     switch (type) {
@@ -200,5 +208,6 @@ export default defineComponent<MindMapNode>((props, {
   {
     props,
     name: 'MindMapNode',
+    emits: ['update:boundaries'],
   }
 );
