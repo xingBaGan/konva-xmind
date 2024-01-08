@@ -21,6 +21,11 @@ const StyleContext = defineComponent(
       "#ff236a",
       "#37b6fd",
       "#a462d9",
+      "#93b793",
+      "#999999",
+      "#ffffcc",
+      "#669966",
+      "#4f4e4e",
     ]);
 
     const lineColors = reactive([
@@ -28,6 +33,11 @@ const StyleContext = defineComponent(
       "#ff236a",
       "#37b6fd",
       "#a462d9",
+      "#93b793",
+      "#999999",
+      "#ffffcc",
+      "#669966",
+      "#4f4e4e",
     ]);
 
     provide(configSymbol, config);

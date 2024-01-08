@@ -1,3 +1,8 @@
+import type { ComponentPublicInstance } from 'vue';
+import type { exposeAttribute } from '../components/MindMapNode.tsx'
+
+
+export type TreeNodeType = ComponentPublicInstance<{}, exposeAttribute>;
 export interface Topic {
   id: string;
   title: string;
@@ -7,6 +12,7 @@ export interface Topic {
   children?: {
     attached: Topic[];
   };
+  instance?: TreeNodeType;
 }
 
 export interface RootTopic extends Topic {
