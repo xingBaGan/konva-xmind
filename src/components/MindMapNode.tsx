@@ -3,8 +3,8 @@ import { colorsSymbol } from "../context/styleContext";
 import { lighten } from "polished";
 type MindMapNode = {
   text?: string;
-  x?: number;
-  y?: number;
+  x: number;
+  y: number;
   nodeColor?: string;
   textColor?: string;
   children?: MindMapNode[];
@@ -86,8 +86,6 @@ export enum NodePositionType {
 
 export default defineComponent<MindMapNode>(
   (props, { expose, emit }) => {
-    const nodeX = props.x || 0;
-    const nodeY = props.y || 0;
     const colorArr: string[] = inject(colorsSymbol) || [];
     const nodePadding = 5;
     const fontFamily = "Arial";
@@ -127,69 +125,69 @@ export default defineComponent<MindMapNode>(
       align: "center",
     };
 
-    const rect = reactive({
-      x: nodeX,
-      y: nodeY,
+    const rect = computed(()=>({
+      x: props.x,
+      y: props.y,
       width: nodeWidth,
       height: nodeHeight,
       ...nodeStyle,
-    });
+    }));
 
-    const text = reactive({
-      x: nodeX + textLeftOffset,
-      y: nodeY + textTopOffset,
+    const text = computed(()=>({
+      x: props.x + textLeftOffset,
+      y: props.y + textTopOffset,
       text: content,
       fontSize: fontSize,
       fontFamily,
       ...textStyle,
-    });
+    }));
 
     const getBorderCoordinate = (type: NodePositionType): IPoint => {
       switch (type) {
         case NodePositionType.TOP_LEFT:
           return {
-            x: nodeX,
-            y: nodeY,
+            x: props.x,
+            y: props.y,
           };
         case NodePositionType.TOP_RIGHT:
           return {
-            x: nodeX + nodeWidth,
-            y: nodeY,
+            x: props.x + nodeWidth,
+            y: props.y,
           };
         case NodePositionType.BOTTOM_LEFT:
           return {
-            x: nodeX,
-            y: nodeY + nodeHeight,
+            x: props.x,
+            y: props.y + nodeHeight,
           };
         case NodePositionType.BOTTOM_RIGHT:
           return {
-            x: nodeX + nodeWidth,
-            y: nodeY + nodeHeight,
+            x: props.x + nodeWidth,
+            y: props.y + nodeHeight,
           };
         case NodePositionType.TOP:
           return {
-            x: nodeX + nodeWidth / 2,
-            y: nodeY,
+            x: props.x + nodeWidth / 2,
+            y: props.y,
           };
         case NodePositionType.LEFT:
           return {
-            x: nodeX,
-            y: nodeY + nodeHeight / 2,
+            x: props.x,
+            y: props.y + nodeHeight / 2,
           };
         case NodePositionType.RIGHT:
           return {
-            x: nodeX + nodeWidth,
-            y: nodeY + nodeHeight / 2,
+            x: props.x + nodeWidth,
+            y: props.y + nodeHeight / 2,
           };
         case NodePositionType.BOTTOM:
           return {
-            x: nodeX + nodeWidth / 2,
-            y: nodeY + nodeHeight,
+            x: props.x + nodeWidth / 2,
+            y: props.y + nodeHeight,
           };
         default:
           return {
-            x: nodeX + nodeWidth,
-            y: nodeY + nodeHeight,
+            x: props.x + nodeWidth,
+            y: props.y + nodeHeight,
           };
       }
     };
@@ -201,8 +199,8 @@ export default defineComponent<MindMapNode>(
 
     return () => (
       <v-group>
-        <v-rect config={rect}></v-rect>
-        <v-text config={text}></v-text>
+        <v-rect config={rect.value}></v-rect>
+        <v-text config={text.value}></v-text>
       </v-group>
     );
   },

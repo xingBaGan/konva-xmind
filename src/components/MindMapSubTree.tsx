@@ -33,13 +33,23 @@ type MindMapTree = {
   lineColorArr?: string[];
   onJointLine?: (position: IPoint) => void;
   id: string;
+  rootPos?: {
+    x: number;
+    y: number;
+  }
 };
 
 export interface exposeAttribute {
   updateSubTreeOffset: (val: number) => void;
 }
 
- export type SubTreeType = ComponentPublicInstance<MindMapTree, exposeAttribute>;
+export type SubTreeType = ComponentPublicInstance<MindMapTree, exposeAttribute>;
+
+type ChildPosition = {
+  id?: string;
+  x: number;
+  y: number;
+}
 
 const props = {
   rootNode: {
@@ -67,31 +77,39 @@ const largeChildrenSize = 5;
 const MindMapTree = defineComponent<MindMapTree>(
   (props, { emit, expose }) => {
     const store = useMindTreeStore();
-    const node = props.rootNode;
+    const node = reactive(props.rootNode);
     const x = node.x;
     const y = node.y;
     const level = computed(() => props.sequence.split("-").length);
     const offsetY = computed(() => Math.max(70 - level.value * 8, 45)).value;
-    const newY = computed(() => y);
     const offsetX = 200;
     if (!props.rootNode.childrenPos) {
-      props.rootNode.childrenPos = [];
+      props.rootNode.childrenPos = reactive([]);
     }
-    const positionList = props.rootNode.childrenPos;
+    const positionList: ChildPosition[] = props.rootNode.childrenPos;
     const children: any[] = node.children?.attached || [];
     const childrenSubTrees: any[] = reactive([]);
 
     const halfLength = children.length / 2;
-    const addChildPosToSubTree = (position: IPoint) => {
-      if (positionList.length >= children.length) return;
-      positionList.push(position);
+    const addChildPosToSubTree = (position: ChildPosition) => {
+      if (positionList.length >= children.length) {
+        const index = positionList.findIndex(pos=>{
+          return pos.id === position.id;
+        });
+        const isDiff = positionList[index].x !== position.x ||  positionList[index].y !== position.y;
+        if(index !== -1 &&  isDiff){
+          positionList.splice(index, 1,position)
+        }
+      } else {
+        positionList.push(position);
+      }
     };
 
-    function updateSubTreeOffset(){
-      // 这里调整y 的值？
-
-      
+    function updateSubTreeOffset(val: number){
+      props.rootNode.y += val * 0.7;
     }
+
+
     expose({
       updateSubTreeOffset,
       rootNode: props.rootNode,
@@ -99,6 +117,7 @@ const MindMapTree = defineComponent<MindMapTree>(
 
     const lines = computed(() => {
       const rootPos = props.rootNode.rootPos;
+      console.log('update lines',  props.rootNode.title, rootPos);
       return (
         rootPos &&
         positionList.length &&
@@ -165,15 +184,20 @@ const MindMapTree = defineComponent<MindMapTree>(
         return (
           <MindMapNode
             text={node.title}
-            x={x}
-            y={y}
+            x={props.rootNode.x}
+            y={props.rootNode.y}
             ref={(el) => {
               if (!el) return;
               store.updateNodeInstance(node.id, el as TreeNodeType);
               const position = (el as TreeNodeType)?.getBorderCoordinate(
                 NodePositionType.LEFT
               );
-              emit("jointLine", position, true);
+              const childPos = reactive({
+                ...position,
+                id: props.id,
+                title: props.rootNode.title,
+              })
+              emit("jointLine", childPos);
             }}
             sequence={props.sequence}
             id={props.id}
@@ -188,12 +212,12 @@ const MindMapTree = defineComponent<MindMapTree>(
           reactive({
             children: child.children,
             title: child.title,
-            x: x + offsetX,
-            y: newY.value + (index - halfLength) * offsetY,
+            x: props.rootNode.x + offsetX,
+            y: props.rootNode.y + (index - halfLength) * offsetY,
             id: child.id,
           })
         );
-        
+
         const color = ref(
           props.lineColor || (props.lineColorArr && props.lineColorArr[index])
         );
@@ -242,7 +266,6 @@ const MindMapTree = defineComponent<MindMapTree>(
             rangeY,
           ];
           store.updateBrotherPosition(node.id, 1, rangeY);
-          // console.log("last", lastNode.rootNode , props.rootNode.title , rangeY);
         }
       }
     });
@@ -251,24 +274,30 @@ const MindMapTree = defineComponent<MindMapTree>(
       <>
         <MindMapNode
           text={node.title}
-          x={x}
-          y={newY.value}
+          x={props.rootNode.x}
+          y={props.rootNode.y}
           sequence={props.sequence}
           ref={(el) => {
             if (!el) return;
             store.updateNodeInstance(node.id, el as TreeNodeType);
-            if (!props.rootNode.rootPos) {
-              const rootPos = (el as TreeNodeType)?.getBorderCoordinate(
-                NodePositionType.RIGHT
-              );
-              props.rootNode.rootPos = {
+            const rootPos = (el as TreeNodeType)?.getBorderCoordinate(
+              NodePositionType.RIGHT
+            );
+            if (!props.rootNode.rootPos || (props.rootNode.rootPos && rootPos.y !== props.rootNode.rootPos.y) ) {
+              props.rootNode.rootPos = reactive({
                 ...rootPos,
-              };
+              });
             }
             const position = (el as TreeNodeType)?.getBorderCoordinate(
               NodePositionType.LEFT
             );
-            emit("jointLine", position);
+
+            const childPos = reactive({
+              ...position,
+              id: props.rootNode.id,
+              title: props.rootNode.title,
+            })
+            emit("jointLine", childPos);
           }}
           id={props.id}
         />

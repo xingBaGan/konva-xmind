@@ -73,10 +73,8 @@ export const useMindTreeStore = defineStore("mindTree", () => {
     const targetNode = BFSTravelArr.value[targetIndex];
     const targetInstance = targetNode?.instance;
     const parent = targetInstance?.$parent as SubTreeType;
-    console.log('target', targetInstance?.$parent, parent.$props, newIncreaseY);
     if (parent && parent.updateSubTreeOffset) {
       parent.updateSubTreeOffset(newIncreaseY);
-      // parent.$props.subTreeOffset = newIncreaseY;
     }
   };
 
