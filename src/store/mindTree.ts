@@ -3,8 +3,8 @@ import xmindData from "../../data.json";
 import { type ComponentPublicInstance, computed, reactive } from "vue";
 import type { Topic, TreeNodeType } from "./type";
 import type { SubTreeType } from '../components/MindMapSubTree'
-const x = 100;
-const y = window.innerHeight / 2 + 100;
+const x = window.innerWidth / 4;
+const y = window.innerHeight / 2 - 100;
 
 const BFSTravel = (node: Topic): Topic[] => {
   const queue = [];
@@ -69,13 +69,22 @@ export const useMindTreeStore = defineStore("mindTree", () => {
       return id === node.id;
     });
     if (selfIndex === -1 || selfIndex === 0) return;
-    const targetIndex = selfIndex + index;
-    const targetNode = BFSTravelArr.value[targetIndex];
-    const targetInstance = targetNode?.instance;
-    const parent = targetInstance?.$parent as SubTreeType;
-    if (parent && parent.updateSubTreeOffset) {
-      parent.updateSubTreeOffset(newIncreaseY);
-    }
+    const selfNode = BFSTravelArr.value[selfIndex];
+    let targetIndex = selfIndex + index;
+    let targetNode;
+    let hasNext = false;
+    do {
+      targetNode = BFSTravelArr.value[targetIndex];
+      const targetInstance = targetNode?.instance;
+      const parent = targetInstance?.$parent as SubTreeType;
+      if (parent && parent.updateSubTreeOffset) {
+        parent.updateSubTreeOffset(newIncreaseY);
+      }
+      targetIndex++;
+      const nextNode  = BFSTravelArr.value[targetIndex];
+      const  nextParent = nextNode?.instance?.$parent as SubTreeType;
+      hasNext = parent.$parent ===  nextParent.$parent;
+    } while(hasNext );
   };
 
   return {

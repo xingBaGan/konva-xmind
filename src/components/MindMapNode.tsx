@@ -15,6 +15,8 @@ type MindMapNode = {
 export interface exposeAttribute {
   getBorderCoordinate: (type: NodePositionType)=> IPoint;
   text: string;
+  level: number;
+  sequence: string;
 }
 
 function getTextWidth(text: string, font: string) {
@@ -195,6 +197,7 @@ export default defineComponent<MindMapNode>(
     expose({
       getBorderCoordinate,
       text: props.text,
+      level: level,
     });
 
     return () => (

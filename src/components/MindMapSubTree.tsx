@@ -90,23 +90,25 @@ const MindMapTree = defineComponent<MindMapTree>(
     const children: any[] = node.children?.attached || [];
     const childrenSubTrees: any[] = reactive([]);
 
-    const halfLength = children.length / 2;
+    const halfLength = Math.floor(children.length / 2);
     const addChildPosToSubTree = (position: ChildPosition) => {
       if (positionList.length >= children.length) {
-        const index = positionList.findIndex(pos=>{
+        const index = positionList.findIndex(pos => {
           return pos.id === position.id;
         });
-        const isDiff = positionList[index].x !== position.x ||  positionList[index].y !== position.y;
-        if(index !== -1 &&  isDiff){
-          positionList.splice(index, 1,position)
+        const isDiff = positionList[index].x !== position.x || positionList[index].y !== position.y;
+        if (index !== -1 && isDiff) {
+          positionList.splice(index, 1, position)
         }
       } else {
         positionList.push(position);
       }
     };
 
-    function updateSubTreeOffset(val: number){
-      props.rootNode.y += val * 0.7;
+    function updateSubTreeOffset(val: number) {
+      console.log('update', val, props.rootNode.title);
+      const offset = val > 300 ? val * 0.65 : val;
+      props.rootNode.y += offset;
     }
 
 
@@ -117,7 +119,7 @@ const MindMapTree = defineComponent<MindMapTree>(
 
     const lines = computed(() => {
       const rootPos = props.rootNode.rootPos;
-      console.log('update lines',  props.rootNode.title, rootPos);
+      // console.log('update lines',  props.rootNode.title, rootPos);
       return (
         rootPos &&
         positionList.length &&
@@ -156,23 +158,27 @@ const MindMapTree = defineComponent<MindMapTree>(
             newCurPoint.y += detY;
           }
 
+          const config = reactive({
+            points: [
+              rootPos.x,
+              rootPos.y,
+              newStartPoints.x,
+              newStartPoints.y,
+              newCurPoint.x,
+              newCurPoint.y,
+              newEndPoints.x,
+              newEndPoints.y,
+              points.x,
+              points.y,
+            ],
+            stroke: lineColor,
+            strokeWidth: 2,
+            tension: 0.2,
+          });
+
           return (
             <v-line
-              points={[
-                rootPos.x,
-                rootPos.y,
-                newStartPoints.x,
-                newStartPoints.y,
-                newCurPoint.x,
-                newCurPoint.y,
-                newEndPoints.x,
-                newEndPoints.y,
-                points.x,
-                points.y,
-              ]}
-              stroke={lineColor}
-              strokeWidth={2}
-              tension={0.2}
+              config={config}
             ></v-line>
           );
         })
@@ -250,8 +256,7 @@ const MindMapTree = defineComponent<MindMapTree>(
       ) {
         const lastItemIndex = childrenSubTrees.length - 1;
         if (
-          childrenSubTrees[lastItemIndex] &&
-          children.length > largeChildrenSize
+          childrenSubTrees[lastItemIndex]
         ) {
           const lastNode = childrenSubTrees[lastItemIndex].value;
           const lastNodePosY = lastNode.rootNode.y;
@@ -265,7 +270,11 @@ const MindMapTree = defineComponent<MindMapTree>(
             width,
             rangeY,
           ];
-          store.updateBrotherPosition(node.id, 1, rangeY);
+          console.log('rangeY', rangeY, props.rootNode.title);
+
+          if (children.length > largeChildrenSize || rangeY > 200) {
+            store.updateBrotherPosition(node.id, 1, rangeY);
+          }
         }
       }
     });
@@ -283,7 +292,7 @@ const MindMapTree = defineComponent<MindMapTree>(
             const rootPos = (el as TreeNodeType)?.getBorderCoordinate(
               NodePositionType.RIGHT
             );
-            if (!props.rootNode.rootPos || (props.rootNode.rootPos && rootPos.y !== props.rootNode.rootPos.y) ) {
+            if (!props.rootNode.rootPos || (props.rootNode.rootPos && rootPos.y !== props.rootNode.rootPos.y)) {
               props.rootNode.rootPos = reactive({
                 ...rootPos,
               });
