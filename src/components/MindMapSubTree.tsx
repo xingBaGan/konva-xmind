@@ -8,6 +8,7 @@ import {
 } from "vue";
 import MindMapNode, { NodePositionType, type IPoint } from "./MindMapNode";
 import useMindTreeStore from "../store/mindTree";
+import MindMapLines from "./MindMapLines";
 import type { TreeNodeType } from "../store/type";
 type MindMapNode = {
   title: string;
@@ -20,7 +21,7 @@ export type RootNode = {
   title: string;
   x: number;
   y: number;
-  rootPos?: IPoint;
+  rootPos: IPoint;
   childrenPos?: IPoint[];
   boundaries?: number[];
   childrenRect?: number[];
@@ -45,7 +46,7 @@ export interface exposeAttribute {
 
 export type SubTreeType = ComponentPublicInstance<MindMapTree, exposeAttribute>;
 
-type ChildPosition = {
+export type ChildPosition = {
   id?: string;
   x: number;
   y: number;
@@ -116,72 +117,6 @@ const MindMapTree = defineComponent<MindMapTree>(
       rootNode: props.rootNode,
     });
 
-    const lines = computed(() => {
-      const rootPos = props.rootNode.rootPos;
-      return (
-        rootPos &&
-        positionList.length &&
-        positionList.map((points, index) => {
-          const lineColor =
-            props.lineColor ||
-            (props.lineColorArr && props.lineColorArr[index]);
-          const newStartPoints = {
-            x: rootPos.x + 10,
-            y: rootPos.y,
-          };
-
-          const newEndPoints = {
-            x: points.x - 10,
-            y: points.y,
-          };
-          // 笛卡尔坐标系转直角坐标系
-          const ratio =
-            -(newEndPoints.y - newStartPoints.y) /
-            (newEndPoints.x - newStartPoints.x);
-          const newCurPoint = {
-            y: (newEndPoints.y - newStartPoints.y) / 2 + newStartPoints.y,
-            x: (newEndPoints.x - newStartPoints.x) / 2 + newStartPoints.x,
-          };
-
-          const detX = 4;
-          const detY = 5;
-
-          if (ratio > 0) {
-            newCurPoint.x -= detX;
-            newCurPoint.y -= detY;
-          }
-
-          if (ratio < 0) {
-            newCurPoint.x -= detX;
-            newCurPoint.y += detY;
-          }
-
-          const config = reactive({
-            points: [
-              rootPos.x,
-              rootPos.y,
-              newStartPoints.x,
-              newStartPoints.y,
-              newCurPoint.x,
-              newCurPoint.y,
-              newEndPoints.x,
-              newEndPoints.y,
-              points.x,
-              points.y,
-            ],
-            stroke: lineColor,
-            strokeWidth: 2,
-            tension: 0.2,
-          });
-
-          return (
-            <v-line
-              config={config}
-            ></v-line>
-          );
-        })
-      );
-    });
 
     if (!children.length) {
       return () => {
@@ -309,7 +244,7 @@ const MindMapTree = defineComponent<MindMapTree>(
           id={props.id}
         />
         {childrenNodes.value}
-        {lines.value}
+        { props.rootNode.rootPos && (<MindMapLines rootPos={props.rootNode.rootPos} positionList={positionList} lineColor={props.lineColor} lineColorArr={props.lineColorArr}/>)}
       </>
     );
   },

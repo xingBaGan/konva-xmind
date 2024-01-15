@@ -1,7 +1,7 @@
 import { reactive, defineComponent, inject, computed, ref, watchEffect } from "vue";
 import { colorsSymbol } from "../context/styleContext";
 import { lighten } from "polished";
-type MindMapNode = {
+export type MindMapNode = {
   text?: string;
   x: number;
   y: number;
