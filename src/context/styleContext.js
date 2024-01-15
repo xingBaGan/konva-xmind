@@ -12,6 +12,7 @@ const StyleContext = defineComponent(
     const config = reactive({
       width,
       height,
+      draggable: true,
     },);
 
     const colors = reactive([

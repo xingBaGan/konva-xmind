@@ -106,7 +106,6 @@ const MindMapTree = defineComponent<MindMapTree>(
     };
 
     function updateSubTreeOffset(val: number) {
-      console.log('update', val, props.rootNode.title);
       const offset = val > 300 ? val * 0.65 : val;
       props.rootNode.y += offset;
     }
@@ -119,7 +118,6 @@ const MindMapTree = defineComponent<MindMapTree>(
 
     const lines = computed(() => {
       const rootPos = props.rootNode.rootPos;
-      // console.log('update lines',  props.rootNode.title, rootPos);
       return (
         rootPos &&
         positionList.length &&
@@ -270,7 +268,7 @@ const MindMapTree = defineComponent<MindMapTree>(
             width,
             rangeY,
           ];
-          console.log('rangeY', rangeY, props.rootNode.title);
+          // console.log('rangeY', rangeY, props.rootNode.title);
 
           if (children.length > largeChildrenSize || rangeY > 200) {
             store.updateBrotherPosition(node.id, 1, rangeY);
