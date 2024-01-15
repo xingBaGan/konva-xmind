@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import Content from './components/content.vue'
+import Main from './components/Main.vue'
 import styleContext from './context/styleContext'
 </script>
 
 <template>
   <styleContext>
-    <Content />
+    <Main />
   </styleContext>
 </template>
 
