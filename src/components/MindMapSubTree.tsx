@@ -4,6 +4,7 @@ import {
   reactive,
   watchEffect,
   ref,
+  watch,
   type ComponentPublicInstance,
 } from "vue";
 import MindMapNode, { NodePositionType, type IPoint } from "./MindMapNode";
@@ -165,6 +166,7 @@ const MindMapTree = defineComponent<MindMapTree>(
 
         watchEffect(() => {
           if (instance.value && childrenSubTrees.length < children.length) {
+            console.log('watch log1 childrenSubTrees', props.rootNode.title);
             childrenSubTrees.push(instance);
           }
         });
@@ -182,7 +184,7 @@ const MindMapTree = defineComponent<MindMapTree>(
       });
     });
 
-    watchEffect(() => {
+    watch([childrenSubTrees],() => {
       if (
         childrenSubTrees &&
         childrenSubTrees.length === node.children.attached.length
@@ -203,9 +205,8 @@ const MindMapTree = defineComponent<MindMapTree>(
             width,
             rangeY,
           ];
-          // console.log('rangeY', rangeY, props.rootNode.title);
-
           if (children.length > largeChildrenSize || rangeY > 200) {
+            console.log('watch log2 updateBrotherPosition', props.rootNode.title, children.length , largeChildrenSize, rangeY);
             store.updateBrotherPosition(node.id, 1, rangeY);
           }
         }

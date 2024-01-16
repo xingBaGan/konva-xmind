@@ -19,7 +19,7 @@ export default defineConfig({
   build: {
     lib: {
       // Could also be a dictionary or array of multiple entry points
-      entry: resolve(__dirname, 'src/components/main.vue'),
+      entry: resolve(__dirname, 'src/App.vue'),
       name: 'MyLib',
       // the proper extensions will be added
       fileName: 'my-lib',
@@ -27,12 +27,13 @@ export default defineConfig({
     rollupOptions: {
       // make sure to externalize deps that shouldn't be bundled
       // into your library
-      external: ['vue'],
+      external: ['vue','pinia'],
       output: {
         // Provide global variables to use in the UMD build
         // for externalized deps
         globals: {
           vue: 'Vue',
+          pinia: 'Pinia',
         },
       },
     },

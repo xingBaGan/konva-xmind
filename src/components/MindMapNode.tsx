@@ -110,6 +110,7 @@ export default defineComponent<MindMapNode>(
     } else if (splitArr.length == 2) {
       nodeColor = colorArr[mainColorIndex];
     } else {
+      if(!colorArr[mainColorIndex]) return;
       nodeColor = lighten(0.15, colorArr[mainColorIndex]);
     }
 
