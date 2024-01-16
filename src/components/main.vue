@@ -1,8 +1,12 @@
 <script setup lang="ts">
-import { inject, ref, onMounted } from 'vue';
+import { inject, ref, onMounted, watchEffect } from 'vue';
 import { configSymbol, lineColorsSymbol } from '../context/styleContext'
 import MindMapTree, { type RootNode } from './MindMapSubTree.tsx';
-import { useMindTreeStore } from '../store/mindTree';
+import { useMindTreeStore, updateInitialTreeData } from '../store/mindTree';
+const props = defineProps(['data']);
+if (props.data) {
+  updateInitialTreeData(props.data.rootTopic);
+}
 const store = useMindTreeStore();
 const config = inject(configSymbol);
 const lineColorArr: string[] = inject(lineColorsSymbol);

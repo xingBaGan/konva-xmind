@@ -1,11 +1,12 @@
 <script lang="ts" setup>
 import Main from './components/Main.vue'
 import styleContext from './context/styleContext'
+const props = defineProps(['data']);
 </script>
 
 <template>
   <styleContext>
-    <Main />
+    <Main :data="props.data"></Main>
   </styleContext>
 </template>
 

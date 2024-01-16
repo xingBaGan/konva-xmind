@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import xmindData from "../../data.json";
-import { type ComponentPublicInstance, computed, reactive } from "vue";
+import { computed, reactive, ref, watchEffect } from "vue";
 import type { Topic, TreeNodeType } from "./type";
 import type { SubTreeType } from '../components/MindMapSubTree'
 const x = window.innerWidth / 4;
@@ -34,9 +34,20 @@ const DFSTravel = (node: Topic, arr: Topic[]) => {
   return arr;
 };
 
+let initialTreeData = ref(xmindData.rootTopic);
+
+export const updateInitialTreeData = (newTreeData: any) => {
+  initialTreeData.value = reactive(newTreeData)
+}
+
+// watchEffect(
+//   () => {
+//     console.log('data', initialTreeData.value);
+//   })
+
 export const useMindTreeStore = defineStore("mindTree", () => {
   const rootNode = reactive({
-    ...xmindData.rootTopic,
+    ...initialTreeData.value,
     x,
     y,
   });
@@ -47,7 +58,7 @@ export const useMindTreeStore = defineStore("mindTree", () => {
   });
 
   const BFSTravelArr = computed(() => {
-    if(!rootNode) return [];
+    if (!rootNode) return [];
     return BFSTravel(rootNode);
   });
 
@@ -70,21 +81,29 @@ export const useMindTreeStore = defineStore("mindTree", () => {
     });
     if (selfIndex === -1 || selfIndex === 0) return;
     const selfNode = BFSTravelArr.value[selfIndex];
+    const selfInstance = selfNode?.instance;
+    const selfNodeParent = selfInstance?.$parent as SubTreeType;
+    console.log('node', selfNode.title , selfInstance, selfInstance?.$parent);
+
     let targetIndex = selfIndex + index;
     let targetNode;
     let hasNext = false;
+
     do {
       targetNode = BFSTravelArr.value[targetIndex];
       const targetInstance = targetNode?.instance;
+
       const parent = targetInstance?.$parent as SubTreeType;
       if (parent && parent.updateSubTreeOffset) {
         parent.updateSubTreeOffset(newIncreaseY);
       }
       targetIndex++;
-      const nextNode  = BFSTravelArr.value[targetIndex];
-      const  nextParent = nextNode?.instance?.$parent as SubTreeType;
-      hasNext = parent.$parent ===  nextParent.$parent;
-    } while(hasNext );
+      const nextNode = BFSTravelArr.value[targetIndex];
+      const nextParent = nextNode?.instance?.$parent as SubTreeType;
+      hasNext = parent.$parent === nextParent.$parent;
+      // console.log('next', nextNode.title);
+
+    } while (hasNext);
   };
 
   return {
