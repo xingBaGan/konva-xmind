@@ -7,7 +7,7 @@ import data from '../data2.json';
 
 const pinia = createPinia()
 const app = createApp(App, {
-  data,
+  data
 });
 app.use(pinia)
 app.use(VueKonva);
