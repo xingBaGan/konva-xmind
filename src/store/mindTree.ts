@@ -110,12 +110,21 @@ export const useMindTreeStore = defineStore("mindTree", () => {
     } while (hasNext);
   };
 
+  const twoNodes = reactive<any>([]);
+
+  const patchNode = (newNode: any)=>{
+    if(twoNodes.length === 2) twoNodes.shift()
+    twoNodes.push(newNode)
+  }
+
   return {
     rootNode,
+    twoNodes,
     DFSTravelArr,
     BFSTravelArr,
     updateNodeInstance,
     updateBrotherPosition,
+    patchNode,
   };
 });
 

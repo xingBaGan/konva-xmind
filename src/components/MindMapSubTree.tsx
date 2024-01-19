@@ -129,9 +129,9 @@ const MindMapTree = defineComponent<MindMapTree>(
     };
 
     function updateSubTreeOffset(val: number) {
-      console.log(props.rootNode.title, 'offset:', val, initialOffset.value, props.rootNode.y);
+      // console.log(props.rootNode.title, 'offset:', val, initialOffset.value, props.rootNode.y);
       if (lastOffset.value <= val) {
-        lastOffset.value = val * 0.65;
+        lastOffset.value = val;
       }
     }
 

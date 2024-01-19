@@ -1,6 +1,7 @@
-import { reactive, defineComponent, inject, computed, ref, watchEffect, effect } from "vue";
+import { reactive, defineComponent, inject, computed, ref, effect } from "vue";
 import { colorsSymbol } from "../context/styleContext";
 import { lighten } from "polished";
+import { useMindTreeStore } from "../store/mindTree";
 export type MindMapNode = {
   text?: string;
   x: number;
@@ -100,6 +101,7 @@ export default defineComponent<MindMapNode>(
     const fontFamily = "Arial";
     const nodeHeight = minNodeHeight;
     const initialFontSize = 18;
+    const store = useMindTreeStore();
     const level = computed(() => props.sequence.split("-").length);
     const fontSize = computed(() => initialFontSize - level.value).value;
     const fontSizeAndFamily = `${fontSize}px ${fontFamily}`;
@@ -174,9 +176,19 @@ export default defineComponent<MindMapNode>(
 
 
     const nodeRef = ref(null);
-    const RectRef = ref(null);
-
+    const rectRef = ref(null);
     const isHover = ref(false);
+
+    const clickFn = () => {
+      if (rectRef.value) {
+        const node = rectRef.value.getNode();
+        // console.log('click', node, 'x', node.attrs.x, 'y', node.attrs.y);
+        store.patchNode(reactive({
+          x: node.attrs.x,
+          y: node.attrs.y,
+        }));
+      }
+    };
 
     effect(() => {
       if (nodeRef.value) {
@@ -188,12 +200,21 @@ export default defineComponent<MindMapNode>(
         node.on('mouseout', function () {
           isHover.value = false
         });
+        node.on('click', clickFn);
       }
     });
 
-    function getRect(){
-      if (RectRef.value) {
-        const node = RectRef.value.getNode();
+
+    effect(() => {
+      if (rectRef.value) {
+        const node = rectRef.value.getNode();
+        node.on('click', clickFn);
+      }
+    });
+
+    function getRect() {
+      if (rectRef.value) {
+        const node = rectRef.value.getNode();
         const Rect = node.getClientRect();
         return Rect;
       }
@@ -259,7 +280,6 @@ export default defineComponent<MindMapNode>(
       }
     };
 
-
     expose({
       getBorderCoordinate,
       text: props.text,
@@ -269,7 +289,7 @@ export default defineComponent<MindMapNode>(
 
     return () => (
       <v-group>
-        <v-Rect config={Rect.value} ref={RectRef}></v-Rect>
+        <v-Rect config={Rect.value} ref={rectRef}></v-Rect>
         <v-text config={text.value} ref={nodeRef}></v-text>
         {(isDev && isHover.value) && (
           <>

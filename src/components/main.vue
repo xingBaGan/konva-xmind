@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { inject, ref, onMounted, watchEffect } from 'vue';
+import { inject, ref, onMounted, watchEffect, computed, effect } from 'vue';
 import { configSymbol, lineColorsSymbol } from '../context/styleContext'
 import MindMapTree, { type RootNode } from './MindMapSubTree.tsx';
 import { useMindTreeStore, updateInitialTreeData } from '../store/mindTree';
@@ -128,7 +128,7 @@ onMounted(() => {
   const inc = 0.2;
   var oldScale = stageInstance.scaleX();
   stageScale.value = oldScale;
-  if(!import.meta.env.PROD) {
+  if (!import.meta.env.PROD) {
     addGrid(stageInstance);
   }
   stageInstance.on('wheel', (e: WheelEvent) => {
@@ -149,6 +149,24 @@ onMounted(() => {
 
 });
 
+watchEffect(() => {
+  console.log('nodes', store.twoNodes);
+})
+
+const lineConfig = computed(() => {
+  const patchNode = store.twoNodes;
+  if (patchNode.length === 2)
+  return ({
+      lines: [
+        patchNode[0].x,
+        patchNode[0].y,
+        patchNode[1].x,
+        patchNode[1].y,
+      ],
+      fill: 'red',
+    })
+})
+
 </script>
 
 <template>
@@ -156,6 +174,7 @@ onMounted(() => {
     <v-layer ref="layer">
       <MindMapTree :rootNode="(rootNode as unknown as RootNode)" sequence="1" :lineColorArr="lineColorArr"
         :id="rootNode.id" />
+      <v-line :config="lineConfig"></v-line>
     </v-layer>
   </v-stage>
 </template>
