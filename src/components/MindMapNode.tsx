@@ -1,4 +1,4 @@
-import { reactive, defineComponent, inject, computed, ref, watchEffect } from "vue";
+import { reactive, defineComponent, inject, computed, ref, watchEffect, effect } from "vue";
 import { colorsSymbol } from "../context/styleContext";
 import { lighten } from "polished";
 export type MindMapNode = {
@@ -12,8 +12,15 @@ export type MindMapNode = {
   id: string;
 };
 
+export interface Rect {
+  x: number,
+  y: number,
+  width: number,
+  height: number
+}
 export interface exposeAttribute {
-  getBorderCoordinate: (type: NodePositionType)=> IPoint;
+  getBorderCoordinate: (type: NodePositionType) => IPoint;
+  getRect: () => Rect | null;
   text: string;
   level: number;
   sequence: string;
@@ -110,7 +117,7 @@ export default defineComponent<MindMapNode>(
     } else if (splitArr.length == 2) {
       nodeColor = colorArr[mainColorIndex];
     } else {
-      if(!colorArr[mainColorIndex]) return;
+      if (!colorArr[mainColorIndex]) return;
       nodeColor = lighten(0.15, colorArr[mainColorIndex]);
     }
 
@@ -128,7 +135,7 @@ export default defineComponent<MindMapNode>(
       align: "center",
     };
 
-    const rect = computed(()=>({
+    const Rect = computed(() => ({
       x: props.x,
       y: props.y,
       width: nodeWidth,
@@ -136,7 +143,64 @@ export default defineComponent<MindMapNode>(
       ...nodeStyle,
     }));
 
-    const text = computed(()=>({
+    const isDev = !import.meta.env.PROD;
+    const circle = computed(() => ({
+      x: props.x,
+      y: props.y,
+      radius: 2,
+      fill: 'red'
+    }));
+
+    const circleText = computed(() => ({
+      x: props.x,
+      y: props.y,
+      text: `(${props.x}, ${props.y})`,
+      fontSize: fontSize,
+      fontFamily,
+      fill: 'grey'
+    }));
+
+    const verticalLine = computed(() => ({
+      points: [0, props.y, props.x, props.y],
+      stroke: '#ccc',
+      strokeWidth: 1,
+    }));
+
+    const horizLine = computed(() => ({
+      points: [props.x, 0, props.x, props.y],
+      stroke: '#ccc',
+      strokeWidth: 1,
+    }));
+
+
+    const nodeRef = ref(null);
+    const RectRef = ref(null);
+
+    const isHover = ref(false);
+
+    effect(() => {
+      if (nodeRef.value) {
+        const node = nodeRef.value.getNode();
+        node.on('mouseover', function () {
+          isHover.value = true
+        });
+
+        node.on('mouseout', function () {
+          isHover.value = false
+        });
+      }
+    });
+
+    function getRect(){
+      if (RectRef.value) {
+        const node = RectRef.value.getNode();
+        const Rect = node.getClientRect();
+        return Rect;
+      }
+      return null;
+    }
+
+    const text = computed(() => ({
       x: props.x + textLeftOffset,
       y: props.y + textTopOffset,
       text: content,
@@ -195,16 +259,27 @@ export default defineComponent<MindMapNode>(
       }
     };
 
+
     expose({
       getBorderCoordinate,
       text: props.text,
       level: level,
+      getRect,
     });
 
     return () => (
       <v-group>
-        <v-rect config={rect.value}></v-rect>
-        <v-text config={text.value}></v-text>
+        <v-Rect config={Rect.value} ref={RectRef}></v-Rect>
+        <v-text config={text.value} ref={nodeRef}></v-text>
+        {(isDev && isHover.value) && (
+          <>
+            <v-text config={circleText.value}></v-text>
+            <v-circle config={circle.value} ></v-circle>
+            <v-line config={verticalLine.value}></v-line>
+            <v-line config={horizLine.value}></v-line>
+          </>
+        )
+        }
       </v-group>
     );
   },

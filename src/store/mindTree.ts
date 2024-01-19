@@ -76,6 +76,9 @@ export const useMindTreeStore = defineStore("mindTree", () => {
     newIncreaseY: number
   ) => {
     if (!BFSTravelArr.value.length) return;
+    // if(id==='DSOdXQBMC4bQIJbnU2QAC') {
+    //   debugger;
+    // }
     const selfIndex = BFSTravelArr.value.findIndex((node) => {
       return id === node.id;
     });
@@ -93,8 +96,6 @@ export const useMindTreeStore = defineStore("mindTree", () => {
       const targetInstance = targetNode?.instance;
       const  targetSubTree = targetInstance?.$parent as SubTreeType;
       const  targetSubTreeParent = targetSubTree?.$parent;
-      // console.log('tree', targetSubTreeParent, selfSubTreeParent);
-
       if(selfSubTreeParent !== targetSubTreeParent) return;
 
       const parent = targetInstance?.$parent as SubTreeType;
@@ -105,7 +106,6 @@ export const useMindTreeStore = defineStore("mindTree", () => {
       const nextNode = BFSTravelArr.value[targetIndex];
       const nextParent = nextNode?.instance?.$parent as SubTreeType;
       hasNext = parent.$parent === nextParent.$parent;
-      // console.log('next', nextNode.title);
 
     } while (hasNext);
   };

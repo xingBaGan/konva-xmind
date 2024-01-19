@@ -1,10 +1,12 @@
-import { defineComponent, reactive } from "vue";
+import { defineComponent, effect, reactive, ref } from "vue";
 import type { RootNode, ChildPosition } from './MindMapSubTree'
 interface MindMapLine {
   rootPos: RootNode['rootPos'],
   positionList: ChildPosition[],
   lineColor?: string,
   lineColorArr?: string[],
+  onMouseOverLines?: (instance: any)=> void,
+  onMouseOutLines?: (instance: any)=> void,
 }
 
 const props = {
@@ -23,7 +25,10 @@ const props = {
   }
 };
 
-export default defineComponent<MindMapLine>((props) => {
+export default defineComponent<MindMapLine>((props,
+  {
+    emit,
+  }) => {
   return () => (
     props.rootPos &&
     props.positionList.length &&
@@ -79,9 +84,24 @@ export default defineComponent<MindMapLine>((props) => {
         strokeWidth: 2,
         tension: 0.2,
       });
+      const lineRef = ref(null);
+
+      effect(()=>{
+        if(lineRef.value) {
+          const lineInstance = lineRef.value.getNode();
+          lineInstance.on('mouseover', function () {
+            emit('mouseOverLines', lineInstance);
+          });
+
+          lineInstance.on('mouseout', function () {
+            emit('mouseOutLines', lineInstance);
+          });
+        }
+      });
 
       return (
         <v-line
+          ref={lineRef}
           config={config}
         ></v-line>
       );
@@ -91,4 +111,5 @@ export default defineComponent<MindMapLine>((props) => {
   {
     props,
     name: "MindMapLines",
+    emits: ["mouseOverLines", "mouseOutLines"],
   })
