@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { inject, ref, onMounted, watchEffect, computed, effect } from 'vue';
+import { inject, ref, onMounted, watch, computed, effect, watchEffect } from 'vue';
 import { configSymbol, lineColorsSymbol } from '../context/styleContext'
 import MindMapTree, { type RootNode } from './MindMapSubTree.tsx';
 import { useMindTreeStore, updateInitialTreeData } from '../store/mindTree';
@@ -148,23 +148,31 @@ onMounted(() => {
 
 
 });
-
-watchEffect(() => {
-  console.log('nodes', store.twoNodes);
+const isDev = !import.meta.env.PROD;
+const lineConfig = computed(() => {
+  if (store.twoNodes.length === 2)
+    return ({
+      points: [
+        store.twoNodes[0].x,
+        store.twoNodes[0].y,
+        store.twoNodes[1].x,
+        store.twoNodes[1].y,
+      ],
+      stroke: 'red',
+      strokeWidth: 2,
+    })
 })
 
-const lineConfig = computed(() => {
-  const patchNode = store.twoNodes;
-  if (patchNode.length === 2)
-  return ({
-      lines: [
-        patchNode[0].x,
-        patchNode[0].y,
-        patchNode[1].x,
-        patchNode[1].y,
-      ],
-      fill: 'red',
+const textConfig = computed(() => {
+  if (store.twoNodes.length === 2) {
+    const distance = store.twoNodes[1].y - store.twoNodes[0].y;
+    return ({
+      x: store.twoNodes[0].x,
+      y: store.twoNodes[0].y,
+      fill: 'black',
+      text: distance,
     })
+  }
 })
 
 </script>
@@ -174,7 +182,10 @@ const lineConfig = computed(() => {
     <v-layer ref="layer">
       <MindMapTree :rootNode="(rootNode as unknown as RootNode)" sequence="1" :lineColorArr="lineColorArr"
         :id="rootNode.id" />
+    </v-layer>
+    <v-layer v-if="isDev">
       <v-line :config="lineConfig"></v-line>
+      <v-text :config="textConfig"></v-text>
     </v-layer>
   </v-stage>
 </template>

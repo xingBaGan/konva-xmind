@@ -1,9 +1,9 @@
 {
-    "id": "j8LKTiwRsyK_EThJaPqOK",
+    "id": "yUKJ54WUC7X2ouKZifzet",
     "class": "sheet",
     "title": "复习路线",
     "rootTopic": {
-        "id": "gAnltzo07wzNmNLIc8piW",
+        "id": "-MxG3ihl5ra_vkCvhTJwq",
         "class": "topic",
         "title": "复习路线",
         "structureClass": "org.xmind.ui.logic.right",
@@ -13,7 +13,7 @@
         "children": {
             "attached": [
                 {
-                    "id": "LtA1x0yoiY1MTWjOScaCO",
+                    "id": "pQsaeOTJSbNe2iDS_FKvt",
                     "title": "javascript",
                     "titleUnedited": true,
                     "boundaries": [],
@@ -21,7 +21,7 @@
                     "children": {
                         "attached": [
                             {
-                                "id": "Dc1VqRQZNgm3tzlIufW7V",
+                                "id": "kRKTDI2SK8bOta7FNhJrC",
                                 "title": "语言特性 ",
                                 "titleUnedited": true,
                                 "boundaries": [],
@@ -29,7 +29,7 @@
                                 "children": {
                                     "attached": [
                                         {
-                                            "id": "HZNEsoiorR-4CDKNH6HeQ",
+                                            "id": "mre9htrFOQTwOgWYWf0IN",
                                             "title": "基本类型 (number， string ,boolean ,Symbol ,undefined, null)",
                                             "titleUnedited": true,
                                             "boundaries": [],
@@ -40,7 +40,7 @@
                                             }
                                         },
                                         {
-                                            "id": "xNqopK8zxS9q9IYdn9epu",
+                                            "id": "WKcXzXfZPVpa_m9NjvDkC",
                                             "title": "内置类型 ",
                                             "titleUnedited": true,
                                             "boundaries": [],
@@ -51,7 +51,7 @@
                                             }
                                         },
                                         {
-                                            "id": "E1pdXzpC8g8yNJ1lnsWR_",
+                                            "id": "g7IY-D0w1a7Cwt1_AwOdO",
                                             "title": "es6",
                                             "titleUnedited": true,
                                             "boundaries": [],
@@ -62,7 +62,7 @@
                                             }
                                         },
                                         {
-                                            "id": "BsOiSjuSFmx3xC97-ZvSH",
+                                            "id": "YWtz2AVZOXexW0JmUdygB",
                                             "title": "函数",
                                             "titleUnedited": true,
                                             "boundaries": [],
@@ -73,7 +73,7 @@
                                             }
                                         },
                                         {
-                                            "id": "xXFaxN89_N9HCwkJtUDSc",
+                                            "id": "0iJZcoVB9RsycuEcp3VcM",
                                             "title": "闭包",
                                             "titleUnedited": true,
                                             "boundaries": [],
@@ -84,7 +84,7 @@
                                             }
                                         },
                                         {
-                                            "id": "JmXGKvk6QcV7Jms6t766Z",
+                                            "id": "w7uINfPUwmWgbqfXkO3un",
                                             "title": "promise",
                                             "titleUnedited": true,
                                             "boundaries": [],
@@ -92,7 +92,7 @@
                                             "children": {
                                                 "attached": [
                                                     {
-                                                        "id": "AOEqV7zJzQ_7PtnWcJYp3",
+                                                        "id": "3R1Mw8cjYBHMiFLFFimf2",
                                                         "title": "测试1",
                                                         "titleUnedited": true,
                                                         "boundaries": [],
@@ -103,7 +103,7 @@
                                                         }
                                                     },
                                                     {
-                                                        "id": "JoZOyMMafalRx9nbyfAot",
+                                                        "id": "cRliOnwSgAPfF3dvkp-2X",
                                                         "title": "2",
                                                         "titleUnedited": true,
                                                         "boundaries": [],
@@ -114,7 +114,7 @@
                                                         }
                                                     },
                                                     {
-                                                        "id": "eqRWU9opkkrupxYxGDKEH",
+                                                        "id": "o6JxFwt46g7aHTO2pd1s8",
                                                         "title": "3",
                                                         "titleUnedited": true,
                                                         "boundaries": [],
@@ -125,7 +125,7 @@
                                                         }
                                                     },
                                                     {
-                                                        "id": "zu94wtg9Q283HcTRwhdcW",
+                                                        "id": "a-cdxsBzOET_IolyiyMnT",
                                                         "title": "4",
                                                         "titleUnedited": true,
                                                         "boundaries": [],
@@ -133,7 +133,7 @@
                                                         "children": {
                                                             "attached": [
                                                                 {
-                                                                    "id": "-jG_pRFfDBJ4uzJhcXmwq",
+                                                                    "id": "5OqRPGey5i3hy6aLI__X9",
                                                                     "title": "4",
                                                                     "titleUnedited": true,
                                                                     "boundaries": [],
@@ -144,7 +144,7 @@
                                                                     }
                                                                 },
                                                                 {
-                                                                    "id": "BDnj0qD5b_v561h2XNvw2",
+                                                                    "id": "V3E4T30p7CSthxwGXfzoM",
                                                                     "title": "5",
                                                                     "titleUnedited": true,
                                                                     "boundaries": [],
@@ -155,7 +155,7 @@
                                                                     }
                                                                 },
                                                                 {
-                                                                    "id": "IHtAUPv9edis0UYMtwEDF",
+                                                                    "id": "QfZ2eDpSr_HDUUm5Km6F2",
                                                                     "title": "6",
                                                                     "titleUnedited": true,
                                                                     "boundaries": [],
@@ -163,7 +163,7 @@
                                                                     "children": {
                                                                         "attached": [
                                                                             {
-                                                                                "id": "xMVvGBbPmFSgpM1LkroRs",
+                                                                                "id": "6GfYZEvK4r2cfTIw4EVE6",
                                                                                 "title": "12122",
                                                                                 "titleUnedited": true,
                                                                                 "boundaries": [],
@@ -171,7 +171,7 @@
                                                                                 "children": {
                                                                                     "attached": [
                                                                                         {
-                                                                                            "id": "BgJ90yzwHUf2FhIOpPFPD",
+                                                                                            "id": "Ef86tlauOSjJPQZI1PrTn",
                                                                                             "title": "阿323",
                                                                                             "titleUnedited": true,
                                                                                             "boundaries": [],
@@ -224,7 +224,7 @@
                     }
                 },
                 {
-                    "id": "OG2F1hX1I4L0wwsZKa1Mc",
+                    "id": "h7tMbmapnXSs8KcC3r9SW",
                     "title": "其他",
                     "titleUnedited": true,
                     "boundaries": [],
@@ -235,7 +235,7 @@
                     }
                 },
                 {
-                    "id": "WnuEYhE2w7CdIS_eZZeIk",
+                    "id": "7r-lX04GaTDbaJ2CeSml9",
                     "title": "测试 3",
                     "titleUnedited": true,
                     "boundaries": [],
@@ -243,7 +243,7 @@
                     "children": {
                         "attached": [
                             {
-                                "id": "JUnP4XZz-BhQo-dRmEldJ",
+                                "id": "CDSlrFmeKcmXlApD0af5v",
                                 "title": "测试说的顶顶顶顶",
                                 "titleUnedited": true,
                                 "boundaries": [],
@@ -254,7 +254,7 @@
                                 }
                             },
                             {
-                                "id": "RDDMelf3G4l5uYVB290Jj",
+                                "id": "58fQGi8I4d8KFaX7PEPDj",
                                 "title": "4",
                                 "titleUnedited": true,
                                 "boundaries": [],
@@ -265,7 +265,7 @@
                                 }
                             },
                             {
-                                "id": "8XqCrKvf7XD1O3s38P9tG",
+                                "id": "PSHdM7cp46LX9h5tAZ51E",
                                 "title": "d",
                                 "titleUnedited": true,
                                 "boundaries": [],
@@ -273,7 +273,7 @@
                                 "children": {
                                     "attached": [
                                         {
-                                            "id": "F4kXDPZ-mv2De3394LZIC",
+                                            "id": "njrQv9_zRRvq_RcOCWjbf",
                                             "title": "df",
                                             "titleUnedited": true,
                                             "boundaries": [],
@@ -284,7 +284,7 @@
                                             }
                                         },
                                         {
-                                            "id": "Cz-YIpwkeG6fDNsNRz6lI",
+                                            "id": "OGMfv7WwLeUH45xKSR4uM",
                                             "title": "df",
                                             "titleUnedited": true,
                                             "boundaries": [],
@@ -295,7 +295,7 @@
                                             }
                                         },
                                         {
-                                            "id": "hti-JiUUED_oBmx998f-i",
+                                            "id": "wEBjL0dOE80V6m0VyHjNb",
                                             "title": "ggg",
                                             "titleUnedited": true,
                                             "boundaries": [],
@@ -306,7 +306,7 @@
                                             }
                                         },
                                         {
-                                            "id": "nHvLplPwRD_APKYDmNC3A",
+                                            "id": "R3J3KN4kvAaImgO01m5uv",
                                             "title": "d",
                                             "titleUnedited": true,
                                             "boundaries": [],
@@ -324,7 +324,7 @@
                                 }
                             },
                             {
-                                "id": "ZQ6SCjX7XZNbjVGO0wWuC",
+                                "id": "kGP5cXzWQ24bPFZ4FkEj3",
                                 "title": "g",
                                 "titleUnedited": true,
                                 "boundaries": [],
@@ -335,7 +335,7 @@
                                 }
                             },
                             {
-                                "id": "nmf5MqUeA5moxf9CPhONm",
+                                "id": "zKrut8cHcsSd80B8H4hPQ",
                                 "title": "h",
                                 "titleUnedited": true,
                                 "boundaries": [],
@@ -353,13 +353,161 @@
                     }
                 },
                 {
-                    "id": "nbqwZS2Ebi-_IrVgpqD6b",
+                    "id": "4HX2DD0vcKw0Zyx2CdmJ7",
                     "title": "2",
                     "titleUnedited": true,
                     "boundaries": [],
                     "summaries": [],
                     "instance": {
                         "text": "2",
+                        "level": 2
+                    }
+                },
+                {
+                    "id": "DF7DhizH7nyCBOC9fUhJt",
+                    "title": "的方式",
+                    "titleUnedited": true,
+                    "boundaries": [],
+                    "summaries": [],
+                    "instance": {
+                        "text": "的方式",
+                        "level": 2
+                    }
+                },
+                {
+                    "id": "nckHm7uI2gFdAZmNjkzj9",
+                    "title": "手动阀手动阀",
+                    "titleUnedited": true,
+                    "boundaries": [],
+                    "summaries": [],
+                    "children": {
+                        "attached": [
+                            {
+                                "id": "JTQvr7YOpjNpYeefX8zcj",
+                                "title": "的地方",
+                                "titleUnedited": true,
+                                "boundaries": [],
+                                "summaries": [],
+                                "children": {
+                                    "attached": [
+                                        {
+                                            "id": "X9Bkm4O90j5WJHLPhW1xN",
+                                            "title": "123",
+                                            "titleUnedited": true,
+                                            "boundaries": [],
+                                            "summaries": [],
+                                            "instance": {
+                                                "text": "123",
+                                                "level": 4
+                                            }
+                                        },
+                                        {
+                                            "id": "934Rq5-LksbLGuNcJXI-l",
+                                            "title": "213如",
+                                            "titleUnedited": true,
+                                            "boundaries": [],
+                                            "summaries": [],
+                                            "children": {
+                                                "attached": [
+                                                    {
+                                                        "id": "w8vqUrMYZMrmFgOelrvMC",
+                                                        "title": "23",
+                                                        "titleUnedited": true,
+                                                        "boundaries": [],
+                                                        "summaries": [],
+                                                        "instance": {
+                                                            "text": "23",
+                                                            "level": 5
+                                                        }
+                                                    },
+                                                    {
+                                                        "id": "d7WozORg54gipUlRgt5AW",
+                                                        "title": "11",
+                                                        "titleUnedited": true,
+                                                        "boundaries": [],
+                                                        "summaries": [],
+                                                        "children": {
+                                                            "attached": [
+                                                                {
+                                                                    "id": "ItdEwTo3B8pSmMSjG-NkG",
+                                                                    "title": "2323",
+                                                                    "titleUnedited": true,
+                                                                    "boundaries": [],
+                                                                    "summaries": [],
+                                                                    "instance": {
+                                                                        "text": "2323",
+                                                                        "level": 6
+                                                                    }
+                                                                }
+                                                            ]
+                                                        },
+                                                        "instance": {
+                                                            "text": "11",
+                                                            "level": 5
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            "instance": {
+                                                "text": "213如",
+                                                "level": 4
+                                            }
+                                        }
+                                    ]
+                                },
+                                "instance": {
+                                    "text": "的地方",
+                                    "level": 3
+                                }
+                            },
+                            {
+                                "id": "Z03Hkl6wH8IHnUx35jELW",
+                                "title": "地方都是",
+                                "titleUnedited": true,
+                                "boundaries": [],
+                                "summaries": [],
+                                "instance": {
+                                    "text": "地方都是",
+                                    "level": 3
+                                }
+                            },
+                            {
+                                "id": "OBxF4ExyTKaMvAr5jH87n",
+                                "title": "121",
+                                "titleUnedited": true,
+                                "boundaries": [],
+                                "summaries": [],
+                                "instance": {
+                                    "text": "121",
+                                    "level": 3
+                                }
+                            }
+                        ]
+                    },
+                    "instance": {
+                        "text": "手动阀手动阀",
+                        "level": 2
+                    }
+                },
+                {
+                    "id": "bO5iTge0NHdbx0BHwbI9e",
+                    "title": "1212",
+                    "titleUnedited": true,
+                    "boundaries": [],
+                    "summaries": [],
+                    "instance": {
+                        "text": "1212",
+                        "level": 2
+                    }
+                },
+                {
+                    "id": "jL5YlEGRNfpRfSgZfqhMI",
+                    "title": "胜多负少",
+                    "titleUnedited": true,
+                    "boundaries": [],
+                    "summaries": [],
+                    "instance": {
+                        "text": "胜多负少",
                         "level": 2
                     }
                 }
@@ -369,9 +517,9 @@
     "topicPositioning": "fixed",
     "relationships": [
         {
-            "id": "e8EbuCmp_CKz34_hKEnqk",
-            "end1Id": "xNqopK8zxS9q9IYdn9epu",
-            "end2Id": "Dc1VqRQZNgm3tzlIufW7V",
+            "id": "0h-L1BMB956U1j0dQNR4t",
+            "end1Id": "WKcXzXfZPVpa_m9NjvDkC",
+            "end2Id": "kRKTDI2SK8bOta7FNhJrC",
             "titleUnedited": true,
             "title": "Relationship Title"
         }

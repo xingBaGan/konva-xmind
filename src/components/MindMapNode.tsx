@@ -48,7 +48,7 @@ function getTextHeight(font: string) {
 }
 
 const minNodeWidth = 70;
-const minNodeHeight = 40;
+export const minNodeHeight = 40;
 
 const props = {
   text: {

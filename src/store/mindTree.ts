@@ -110,11 +110,11 @@ export const useMindTreeStore = defineStore("mindTree", () => {
     } while (hasNext);
   };
 
-  const twoNodes = reactive<any>([]);
+  const twoNodes = ref<any>([]);
 
   const patchNode = (newNode: any)=>{
-    if(twoNodes.length === 2) twoNodes.shift()
-    twoNodes.push(newNode)
+    if(twoNodes.value.length === 2) twoNodes.value.shift()
+    twoNodes.value.push(newNode)
   }
 
   return {

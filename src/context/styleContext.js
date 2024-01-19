@@ -14,31 +14,29 @@ const StyleContext = defineComponent(
       height,
       draggable: true,
     },);
-
+    const colorPalette = [
+      "#ff6fca",
+      "#ff236a",
+      "#37b6fd",
+      "#a462d9",
+      "#93b793",
+      "#999999",
+      "#669966",
+      "#4f4e4e",
+      "#005872",
+      "#347781",
+      "#51959a",
+      "#7dab9a",
+      "#a0c9a7"
+    ];
     const colors = reactive([
       "#000000",
       "#ffac77",
-      "#ff6fca",
-      "#ff236a",
-      "#37b6fd",
-      "#a462d9",
-      "#93b793",
-      "#999999",
-      "#ffffcc",
-      "#669966",
-      "#4f4e4e",
+      ...colorPalette,
     ]);
 
     const lineColors = reactive([
-      "#ff6fca",
-      "#ff236a",
-      "#37b6fd",
-      "#a462d9",
-      "#93b793",
-      "#999999",
-      "#ffffcc",
-      "#669966",
-      "#4f4e4e",
+      ...colorPalette
     ]);
 
     provide(configSymbol, config);

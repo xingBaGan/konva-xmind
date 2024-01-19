@@ -8,7 +8,7 @@ import {
   type ComponentPublicInstance,
   effect,
 } from "vue";
-import MindMapNode, { NodePositionType, type IPoint, type Rect } from "./MindMapNode";
+import MindMapNode, { NodePositionType, type IPoint, type Rect, minNodeHeight } from "./MindMapNode";
 import { useMindTreeStore } from "../store/mindTree";
 import MindMapLines from "./MindMapLines";
 import type { TreeNodeType } from "../store/type";
@@ -101,7 +101,6 @@ const MindMapTree = defineComponent<MindMapTree>(
     const level = computed(() => props.sequence.split("-").length);
     const offsetY = computed(() => Math.max(70 - level.value * 8, 45)).value;
     const offsetX = 200;
-    const initialOffset = ref(props.rootNode.y);
     if (!props.rootNode.childrenPos) {
       props.rootNode.childrenPos = reactive([]);
     }
@@ -109,7 +108,7 @@ const MindMapTree = defineComponent<MindMapTree>(
     const children: any[] = node.children?.attached || [];
     const childrenSubTrees: any[] = reactive([]);
     const rootInstance = ref();
-    const halfLength = Math.floor(children.length / 2);
+    const halfLength = children.length / 2;
     const subTreeRect = ref();
     const subChildTreeRect = ref();
     const lastOffset = ref(0);
@@ -129,9 +128,9 @@ const MindMapTree = defineComponent<MindMapTree>(
     };
 
     function updateSubTreeOffset(val: number) {
-      // console.log(props.rootNode.title, 'offset:', val, initialOffset.value, props.rootNode.y);
-      if (lastOffset.value <= val) {
-        lastOffset.value = val;
+      // console.log(props.rootNode.title, 'offset:', val, lastOffset.value, props.rootNode.y);
+      if (lastOffset.value <= val / 2) {
+        lastOffset.value = val / 2;
       }
     }
 
@@ -171,13 +170,14 @@ const MindMapTree = defineComponent<MindMapTree>(
     }
 
     const childrenNodes = computed(() => {
+      const isOdd = halfLength % 1 === 0.5;
       return children.map((child, index) => {
         const nextRootNode = computed(() =>
           reactive({
             children: child.children,
             title: child.title,
             x: props.rootNode.x + offsetX,
-            y: newOffsetY.value + (index - halfLength) * offsetY,
+            y: newOffsetY.value + (index - Math.floor(halfLength)) * offsetY + (!isOdd ? +(minNodeHeight/2) : 0),
             id: child.id,
           })
         );
