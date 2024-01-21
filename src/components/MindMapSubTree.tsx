@@ -8,7 +8,12 @@ import {
   type ComponentPublicInstance,
   effect,
 } from "vue";
-import MindMapNode, { NodePositionType, type IPoint, type Rect, minNodeHeight } from "./MindMapNode";
+import MindMapNode, {
+  NodePositionType,
+  type IPoint,
+  type Rect,
+  minNodeHeight,
+} from "./MindMapNode";
 import { useMindTreeStore } from "../store/mindTree";
 import MindMapLines from "./MindMapLines";
 import type { TreeNodeType } from "../store/type";
@@ -16,11 +21,10 @@ type MindMapNode = {
   title: string;
 };
 
-
 type SubTreeRectPayload = {
-  childRect: Rect,
-  title: string,
-}
+  childRect: Rect;
+  title: string;
+};
 export type RootNode = {
   children: {
     attached: RootNode[];
@@ -44,12 +48,13 @@ type MindMapTree = {
   rootPos?: {
     x: number;
     y: number;
-  }
+  };
 };
 
 export interface exposeAttribute {
   updateSubTreeOffset: (val: number) => void;
-  getRootNodeInstance: () => TreeNodeType
+  getRootNodeInstance: () => TreeNodeType;
+  subTreeRect: Rect;
 }
 
 export type SubTreeType = ComponentPublicInstance<MindMapTree, exposeAttribute>;
@@ -58,7 +63,7 @@ export type ChildPosition = {
   id?: string;
   x: number;
   y: number;
-}
+};
 
 const props = {
   rootNode: {
@@ -115,12 +120,14 @@ const MindMapTree = defineComponent<MindMapTree>(
     const newOffsetY = computed(() => props.rootNode.y + lastOffset.value);
     const addChildPosToSubTree = (position: ChildPosition) => {
       if (positionList.length >= children.length) {
-        const index = positionList.findIndex(pos => {
+        const index = positionList.findIndex((pos) => {
           return pos.id === position.id;
         });
-        const isDiff = positionList[index].x !== position.x || positionList[index].y !== position.y;
+        const isDiff =
+          positionList[index].x !== position.x ||
+          positionList[index].y !== position.y;
         if (index !== -1 && isDiff) {
-          positionList.splice(index, 1, position)
+          positionList.splice(index, 1, position);
         }
       } else {
         positionList.push(position);
@@ -134,12 +141,18 @@ const MindMapTree = defineComponent<MindMapTree>(
       }
     }
 
+    // const val = computed(() => subTreeRect.value);
+
+    // watchEffect(()=>{
+    //   console.log( props.rootNode.title,'subTreeRect', val.value);
+    // })
+
     expose({
       updateSubTreeOffset,
       rootNode: props.rootNode,
-      getRootNodeInstance: () => rootInstance.value
+      getRootNodeInstance: () => rootInstance.value,
+      subTreeRect,
     });
-
 
     if (!children.length) {
       return () => {
@@ -158,9 +171,9 @@ const MindMapTree = defineComponent<MindMapTree>(
                 ...position,
                 id: props.id,
                 title: props.rootNode.title,
-              })
+              });
               emit("jointLine", childPos);
-              rootInstance.value = el
+              rootInstance.value = el;
             }}
             sequence={props.sequence}
             id={props.id}
@@ -177,7 +190,10 @@ const MindMapTree = defineComponent<MindMapTree>(
             children: child.children,
             title: child.title,
             x: props.rootNode.x + offsetX,
-            y: newOffsetY.value + (index - Math.floor(halfLength)) * offsetY + (!isOdd ? +(minNodeHeight/2) : 0),
+            y:
+              newOffsetY.value +
+              (index - Math.floor(halfLength)) * offsetY +
+              (!isOdd ? +(minNodeHeight / 2) : 0),
             id: child.id,
           })
         );
@@ -203,7 +219,7 @@ const MindMapTree = defineComponent<MindMapTree>(
             lineColor={color.value}
             id={child.id}
             onUpdateSubtreeRect={(payload: SubTreeRectPayload) => {
-              subChildTreeRect.value = payload.childRect
+              subChildTreeRect.value = payload.childRect;
             }}
           ></MindMapTree>
         );
@@ -212,25 +228,33 @@ const MindMapTree = defineComponent<MindMapTree>(
 
     watchEffect(() => {
       if (subChildTreeRect.value && subTreeRect.value) {
-        const rect = getMergedTwoRect(subTreeRect.value, subChildTreeRect.value)
-        subTreeRect.value = rect
+        const rect = getMergedTwoRect(
+          subTreeRect.value,
+          subChildTreeRect.value
+        );
+        subTreeRect.value = rect;
         emit("updateSubtreeRect", {
           childRect: rect,
           title: props.rootNode.title,
           sub: true,
         });
       }
-    })
-
+    });
 
     watch([subTreeRect], () => {
       // console.log(props.rootNode.title, 'update', subTreeRect.value, props.rootNode.id);
-
-      store.updateBrotherPosition(node.id, 1, subTreeRect.value.height);
-    })
+      if (subTreeRect.value) {
+        console.log(
+          props.rootNode.title,
+          "updateBrotherPosition",
+          subTreeRect.value.height
+        );
+        store.updateBrotherPosition(node.id, 1, subTreeRect.value.height);
+      }
+    });
 
     const childrenRects = computed(() =>
-      childrenSubTrees.map(subTreeInstance => {
+      childrenSubTrees.map((subTreeInstance) => {
         return subTreeInstance.value.getRootNodeInstance().getRect();
       })
     );
@@ -249,9 +273,7 @@ const MindMapTree = defineComponent<MindMapTree>(
 
         const rects = childrenRects.value;
         const lastItemIndex = rects.length - 1;
-        if (
-          rects[lastItemIndex]
-        ) {
+        if (rects[lastItemIndex]) {
           const lastNode = rects[lastItemIndex];
           const lastNodePosY = lastNode.y;
           const firstNode = rects[0];
@@ -276,34 +298,43 @@ const MindMapTree = defineComponent<MindMapTree>(
             childRect: rect,
             title: props.rootNode.title,
           });
+          props.rootNode.subTreeRect = subTreeRect.value;
         }
       }
     });
     const isDev = !import.meta.env.PROD;
-    const subTreeDebugMessage = computed(() => (`${JSON.stringify(node.childrenRect)} \n ${JSON.stringify(subTreeRect.value)}`));
+    const subTreeDebugMessage = computed(
+      () =>
+        `${JSON.stringify(node.childrenRect)} \n ${JSON.stringify(
+          subTreeRect.value
+        )}`
+    );
     const isLinesOver = ref(false);
-    const showSubtreeRect = computed(() => (isDev && isLinesOver.value));
+    const showSubtreeRect = computed(() => isDev && isLinesOver.value);
     /*
       x: subChildTreeRect.value.x,
       y: subChildTreeRect.value.y,
       width: subChildTreeRect.value.width,
       height: subChildTreeRect.value.height
       */
-    const subtreeRectConfig = computed(() => (subTreeRect.value && ({
-      points: [
-        subTreeRect.value.x,
-        subTreeRect.value.y,
-        subTreeRect.value.x + subTreeRect.value.width,
-        subTreeRect.value.y,
-        subTreeRect.value.x + subTreeRect.value.width,
-        subTreeRect.value.y + subTreeRect.value.height,
-        subTreeRect.value.x,
-        subTreeRect.value.y + subTreeRect.value.height,
-        subTreeRect.value.x,
-        subTreeRect.value.y,
-      ],
-      dash: [10, 5],
-    })));
+    const subtreeRectConfig = computed(
+      () =>
+        subTreeRect.value && {
+          points: [
+            subTreeRect.value.x,
+            subTreeRect.value.y,
+            subTreeRect.value.x + subTreeRect.value.width,
+            subTreeRect.value.y,
+            subTreeRect.value.x + subTreeRect.value.width,
+            subTreeRect.value.y + subTreeRect.value.height,
+            subTreeRect.value.x,
+            subTreeRect.value.y + subTreeRect.value.height,
+            subTreeRect.value.x,
+            subTreeRect.value.y,
+          ],
+          dash: [10, 5],
+        }
+    );
 
     return () => (
       <>
@@ -318,7 +349,10 @@ const MindMapTree = defineComponent<MindMapTree>(
             const rootPos = (el as TreeNodeType)?.getBorderCoordinate(
               NodePositionType.RIGHT
             );
-            if (!props.rootNode.rootPos || (props.rootNode.rootPos && rootPos.y !== props.rootNode.rootPos.y)) {
+            if (
+              !props.rootNode.rootPos ||
+              (props.rootNode.rootPos && rootPos.y !== props.rootNode.rootPos.y)
+            ) {
               props.rootNode.rootPos = reactive({
                 ...rootPos,
               });
@@ -331,9 +365,9 @@ const MindMapTree = defineComponent<MindMapTree>(
               ...position,
               id: props.rootNode.id,
               title: props.rootNode.title,
-            })
+            });
             emit("jointLine", childPos);
-            rootInstance.value = el
+            rootInstance.value = el;
           }}
           id={props.id}
         />
@@ -346,30 +380,38 @@ const MindMapTree = defineComponent<MindMapTree>(
             onMouseOutLines={(instance) => {
               isLinesOver.value = false;
             }}
-            rootPos={props.rootNode.rootPos} positionList={positionList} lineColor={props.lineColor} lineColorArr={props.lineColorArr} />)}
-        {isDev && (<v-text x={props.rootNode.x} y={newOffsetY.value + offsetY} text={subTreeDebugMessage.value} />)}
-        {
-          showSubtreeRect.value &&
-          (
-            <>
-              <v-line config={
-                {
-                  ...subtreeRectConfig.value,
-                  stroke: "red",
-                }
-              }></v-line>
+            rootPos={props.rootNode.rootPos}
+            positionList={positionList}
+            lineColor={props.lineColor}
+            lineColorArr={props.lineColorArr}
+          />
+        )}
+        {isDev && (
+          <v-text
+            x={props.rootNode.x}
+            y={newOffsetY.value + offsetY}
+            text={subTreeDebugMessage.value}
+          />
+        )}
+        {showSubtreeRect.value && (
+          <>
+            <v-line
+              config={{
+                ...subtreeRectConfig.value,
+                stroke: "red",
+              }}
+            ></v-line>
 
-              <v-text config={{
+            <v-text
+              config={{
                 x: subTreeRect.value.x,
                 y: subTreeRect.value.y,
                 text: `(${subTreeRect.value.x}, ${subTreeRect.value.y})\n width: ${subTreeRect.value.width} \n height ${subTreeRect.value.height}`,
-                fill: 'grey'
-              }
-              }>
-              </v-text>
-            </>
-          )
-        }
+                fill: "grey",
+              }}
+            ></v-text>
+          </>
+        )}
       </>
     );
   },

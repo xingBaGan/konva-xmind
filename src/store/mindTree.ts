@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import xmindData from "../../data.json";
 import { computed, reactive, ref, watchEffect } from "vue";
 import type { Topic, TreeNodeType } from "./type";
-import type { SubTreeType } from '../components/MindMapSubTree'
+import type { SubTreeType } from "../components/MindMapSubTree";
 const x = window.innerWidth / 4;
 const y = window.innerHeight / 2 - 100;
 
@@ -37,8 +37,8 @@ const DFSTravel = (node: Topic, arr: Topic[]) => {
 let initialTreeData = ref(xmindData.rootTopic);
 
 export const updateInitialTreeData = (newTreeData: any) => {
-  initialTreeData.value = reactive(newTreeData)
-}
+  initialTreeData.value = reactive(newTreeData);
+};
 
 // watchEffect(
 //   () => {
@@ -76,9 +76,6 @@ export const useMindTreeStore = defineStore("mindTree", () => {
     newIncreaseY: number
   ) => {
     if (!BFSTravelArr.value.length) return;
-    // if(id==='DSOdXQBMC4bQIJbnU2QAC') {
-    //   debugger;
-    // }
     const selfIndex = BFSTravelArr.value.findIndex((node) => {
       return id === node.id;
     });
@@ -86,7 +83,6 @@ export const useMindTreeStore = defineStore("mindTree", () => {
     const selfNode = BFSTravelArr.value[selfIndex];
     const selfInstance = selfNode?.instance;
     const selfSubTree = selfInstance?.$parent as SubTreeType;
-    const selfSubTreeParent = selfSubTree?.$parent;
     let targetIndex = selfIndex + index;
     let targetNode;
     let hasNext = false;
@@ -94,28 +90,43 @@ export const useMindTreeStore = defineStore("mindTree", () => {
     do {
       targetNode = BFSTravelArr.value[targetIndex];
       const targetInstance = targetNode?.instance;
-      const  targetSubTree = targetInstance?.$parent as SubTreeType;
-      const  targetSubTreeParent = targetSubTree?.$parent;
-      if(selfSubTreeParent !== targetSubTreeParent) return;
+      const targetSubTree = targetInstance?.$parent;
+      const selfSubTreeParent = selfSubTree?.$parent;
+      const targetSubTreeParent = targetSubTree?.$parent;
+      // Judge wether in the same level.
+      if (selfSubTreeParent !== targetSubTreeParent) return;
+
+      // Judge sibling node wether in the rectangle.
 
       const parent = targetInstance?.$parent as SubTreeType;
+
+      const rect = parent.subTreeRect;
+      // setTimeout(()=>{
+       
+      // })
+            console.log(
+              parent.rootNode.title,
+              parent.rootNode.subTreeRect,
+              rect,
+              parent
+            );
       if (parent && parent.updateSubTreeOffset) {
         parent.updateSubTreeOffset(newIncreaseY);
       }
+      // Jump to the next node.
       targetIndex++;
       const nextNode = BFSTravelArr.value[targetIndex];
       const nextParent = nextNode?.instance?.$parent as SubTreeType;
       hasNext = parent.$parent === nextParent.$parent;
-
     } while (hasNext);
   };
 
   const twoNodes = ref<any>([]);
 
-  const patchNode = (newNode: any)=>{
-    if(twoNodes.value.length === 2) twoNodes.value.shift()
-    twoNodes.value.push(newNode)
-  }
+  const patchNode = (newNode: any) => {
+    if (twoNodes.value.length === 2) twoNodes.value.shift();
+    twoNodes.value.push(newNode);
+  };
 
   return {
     rootNode,
