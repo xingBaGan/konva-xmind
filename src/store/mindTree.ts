@@ -40,11 +40,6 @@ export const updateInitialTreeData = (newTreeData: any) => {
   initialTreeData.value = reactive(newTreeData);
 };
 
-// watchEffect(
-//   () => {
-//     console.log('data', initialTreeData.value);
-//   })
-
 export const useMindTreeStore = defineStore("mindTree", () => {
   const rootNode = reactive({
     ...initialTreeData.value,
@@ -71,54 +66,27 @@ export const useMindTreeStore = defineStore("mindTree", () => {
   };
 
   const updateBrotherPosition = (
-    id: string,
-    index: number,
-    newIncreaseY: number
+    currentNode: SubTreeType,
+    offsetY: number
   ) => {
-    if (!BFSTravelArr.value.length) return;
-    const selfIndex = BFSTravelArr.value.findIndex((node) => {
-      return id === node.id;
+    const currentTreeNode = currentNode?.getRootNodeInstance();
+    const currentLevel = currentTreeNode.level;
+    const siblingNodes = BFSTravelArr.value.filter((node)=>{
+      return node.instance?.level === currentLevel;
     });
-    if (selfIndex === -1 || selfIndex === 0) return;
-    const selfNode = BFSTravelArr.value[selfIndex];
-    const selfInstance = selfNode?.instance;
-    const selfSubTree = selfInstance?.$parent as SubTreeType;
-    let targetIndex = selfIndex + index;
-    let targetNode;
-    let hasNext = false;
+    const levelIndex = siblingNodes.findIndex((node: Topic)=>{
+      return node.id === currentNode.rootNode.id
+    });
+    if(levelIndex !== -1) {
+      siblingNodes.forEach((node, index)=>{
+        if(index >= levelIndex) {
+          const subTree = node.instance?.$parent;
+          if(subTree )
+            (subTree as SubTreeType).updateSubTreeOffset(offsetY);
+        }
+      })
+    }
 
-    do {
-      targetNode = BFSTravelArr.value[targetIndex];
-      const targetInstance = targetNode?.instance;
-      const targetSubTree = targetInstance?.$parent;
-      const selfSubTreeParent = selfSubTree?.$parent;
-      const targetSubTreeParent = targetSubTree?.$parent;
-      // Judge wether in the same level.
-      if (selfSubTreeParent !== targetSubTreeParent) return;
-
-      // Judge sibling node wether in the rectangle.
-
-      const parent = targetInstance?.$parent as SubTreeType;
-
-      const rect = parent.subTreeRect;
-      // setTimeout(()=>{
-       
-      // })
-            console.log(
-              parent.rootNode.title,
-              parent.rootNode.subTreeRect,
-              rect,
-              parent
-            );
-      if (parent && parent.updateSubTreeOffset) {
-        parent.updateSubTreeOffset(newIncreaseY);
-      }
-      // Jump to the next node.
-      targetIndex++;
-      const nextNode = BFSTravelArr.value[targetIndex];
-      const nextParent = nextNode?.instance?.$parent as SubTreeType;
-      hasNext = parent.$parent === nextParent.$parent;
-    } while (hasNext);
   };
 
   const twoNodes = ref<any>([]);

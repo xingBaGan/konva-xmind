@@ -2,6 +2,7 @@ import { reactive, defineComponent, inject, computed, ref, effect } from "vue";
 import { colorsSymbol } from "../context/styleContext";
 import { lighten } from "polished";
 import { useMindTreeStore } from "../store/mindTree";
+import type { ComponentPublicInstance } from 'vue';
 export type MindMapNode = {
   text?: string;
   x: number;
@@ -26,6 +27,8 @@ export interface exposeAttribute {
   level: number;
   sequence: string;
 }
+
+export type TreeNodeType = ComponentPublicInstance<MindMapNode, exposeAttribute>;
 
 function getTextWidth(text: string, font: string) {
   const canvas = document.createElement("canvas");

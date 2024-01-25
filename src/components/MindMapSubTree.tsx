@@ -52,7 +52,7 @@ type MindMapTree = {
 };
 
 export interface exposeAttribute {
-  updateSubTreeOffset: (val: number) => void;
+  updateSubTreeOffset: (offsetY: number) => void;
   getRootNodeInstance: () => TreeNodeType;
   subTreeRect: Rect;
 }
@@ -134,19 +134,11 @@ const MindMapTree = defineComponent<MindMapTree>(
       }
     };
 
-    function updateSubTreeOffset(val: number) {
-      // console.log(props.rootNode.title, 'offset:', val, lastOffset.value, props.rootNode.y);
-      if (lastOffset.value <= val / 2) {
-        lastOffset.value = val / 2;
+    function updateSubTreeOffset(offsetY: number) {
+      if (lastOffset.value <= offsetY / 2) {
+        lastOffset.value = offsetY / 2;
       }
     }
-
-    // const val = computed(() => subTreeRect.value);
-
-    // watchEffect(()=>{
-    //   console.log( props.rootNode.title,'subTreeRect', val.value);
-    // })
-
     expose({
       updateSubTreeOffset,
       rootNode: props.rootNode,
@@ -236,26 +228,13 @@ const MindMapTree = defineComponent<MindMapTree>(
         emit("updateSubtreeRect", {
           childRect: rect,
           title: props.rootNode.title,
-          sub: true,
         });
-      }
-    });
-
-    watch([subTreeRect], () => {
-      // console.log(props.rootNode.title, 'update', subTreeRect.value, props.rootNode.id);
-      if (subTreeRect.value) {
-        console.log(
-          props.rootNode.title,
-          "updateBrotherPosition",
-          subTreeRect.value.height
-        );
-        store.updateBrotherPosition(node.id, 1, subTreeRect.value.height);
       }
     });
 
     const childrenRects = computed(() =>
       childrenSubTrees.map((subTreeInstance) => {
-        return subTreeInstance.value.getRootNodeInstance().getRect();
+        return subTreeInstance.value?.getRootNodeInstance().getRect();
       })
     );
 
@@ -311,12 +290,6 @@ const MindMapTree = defineComponent<MindMapTree>(
     );
     const isLinesOver = ref(false);
     const showSubtreeRect = computed(() => isDev && isLinesOver.value);
-    /*
-      x: subChildTreeRect.value.x,
-      y: subChildTreeRect.value.y,
-      width: subChildTreeRect.value.width,
-      height: subChildTreeRect.value.height
-      */
     const subtreeRectConfig = computed(
       () =>
         subTreeRect.value && {

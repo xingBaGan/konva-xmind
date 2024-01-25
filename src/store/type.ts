@@ -1,8 +1,8 @@
-import type { ComponentPublicInstance } from 'vue';
-import type { exposeAttribute } from '../components/MindMapNode.tsx'
+import type { TreeNodeType } from '../components/MindMapNode';
+export { type TreeNodeType } from '../components/MindMapNode'
+export { type SubTreeType } from '../components/MindMapSubTree';
 
 
-export type TreeNodeType = ComponentPublicInstance<{}, exposeAttribute>;
 export interface Topic {
   id: string;
   title: string;
@@ -14,7 +14,6 @@ export interface Topic {
   };
   instance?: TreeNodeType;
 }
-
 export interface RootTopic extends Topic {
   structureClass: string;
 }
