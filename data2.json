@@ -1,9 +1,9 @@
 {
-    "id": "yUKJ54WUC7X2ouKZifzet",
+    "id": "Cni818ItmRD6s5HyCPg2d",
     "class": "sheet",
     "title": "复习路线",
     "rootTopic": {
-        "id": "-MxG3ihl5ra_vkCvhTJwq",
+        "id": "yePLfbf43cz2yj747HdlF",
         "class": "topic",
         "title": "复习路线",
         "structureClass": "org.xmind.ui.logic.right",
@@ -13,342 +13,139 @@
         "children": {
             "attached": [
                 {
-                    "id": "pQsaeOTJSbNe2iDS_FKvt",
-                    "title": "javascript",
+                    "id": "3cYxNBKjTmxdxmyKcLe4b",
+                    "title": "测试1",
                     "titleUnedited": true,
                     "boundaries": [],
                     "summaries": [],
                     "children": {
                         "attached": [
                             {
-                                "id": "kRKTDI2SK8bOta7FNhJrC",
-                                "title": "语言特性 ",
+                                "id": "fBNmFLVhkCiE372sDyRbC",
+                                "title": "测试2",
                                 "titleUnedited": true,
                                 "boundaries": [],
                                 "summaries": [],
                                 "children": {
                                     "attached": [
                                         {
-                                            "id": "mre9htrFOQTwOgWYWf0IN",
-                                            "title": "基本类型 (number， string ,boolean ,Symbol ,undefined, null)",
+                                            "id": "A3uiH89wcwDCpqzu3ekAH",
+                                            "title": "侧室4",
                                             "titleUnedited": true,
                                             "boundaries": [],
                                             "summaries": [],
                                             "instance": {
-                                                "text": "基本类型 (number， string ,boolean ,Symbol ,undefined, null)",
+                                                "text": "侧室4",
                                                 "level": 4
                                             }
                                         },
                                         {
-                                            "id": "WKcXzXfZPVpa_m9NjvDkC",
-                                            "title": "内置类型 ",
-                                            "titleUnedited": true,
-                                            "boundaries": [],
-                                            "summaries": [],
-                                            "instance": {
-                                                "text": "内置类型 ",
-                                                "level": 4
-                                            }
-                                        },
-                                        {
-                                            "id": "g7IY-D0w1a7Cwt1_AwOdO",
-                                            "title": "es6",
-                                            "titleUnedited": true,
-                                            "boundaries": [],
-                                            "summaries": [],
-                                            "instance": {
-                                                "text": "es6",
-                                                "level": 4
-                                            }
-                                        },
-                                        {
-                                            "id": "YWtz2AVZOXexW0JmUdygB",
-                                            "title": "函数",
-                                            "titleUnedited": true,
-                                            "boundaries": [],
-                                            "summaries": [],
-                                            "instance": {
-                                                "text": "函数",
-                                                "level": 4
-                                            }
-                                        },
-                                        {
-                                            "id": "0iJZcoVB9RsycuEcp3VcM",
-                                            "title": "闭包",
-                                            "titleUnedited": true,
-                                            "boundaries": [],
-                                            "summaries": [],
-                                            "instance": {
-                                                "text": "闭包",
-                                                "level": 4
-                                            }
-                                        },
-                                        {
-                                            "id": "w7uINfPUwmWgbqfXkO3un",
-                                            "title": "promise",
+                                            "id": "uLCCxCCGapNIyjAuQ9N51",
+                                            "title": "侧室5",
                                             "titleUnedited": true,
                                             "boundaries": [],
                                             "summaries": [],
                                             "children": {
                                                 "attached": [
                                                     {
-                                                        "id": "3R1Mw8cjYBHMiFLFFimf2",
-                                                        "title": "测试1",
+                                                        "id": "ua7qvZz4EbKnPBArMcbsN",
+                                                        "title": "测试列表1",
                                                         "titleUnedited": true,
                                                         "boundaries": [],
                                                         "summaries": [],
                                                         "instance": {
-                                                            "text": "测试1",
+                                                            "text": "测试列表1",
                                                             "level": 5
                                                         }
                                                     },
                                                     {
-                                                        "id": "cRliOnwSgAPfF3dvkp-2X",
-                                                        "title": "2",
+                                                        "id": "DuRhw2QEwKgO_LIHUdMP7",
+                                                        "title": "测试列表2",
                                                         "titleUnedited": true,
                                                         "boundaries": [],
                                                         "summaries": [],
                                                         "instance": {
-                                                            "text": "2",
+                                                            "text": "测试列表2",
                                                             "level": 5
                                                         }
                                                     },
                                                     {
-                                                        "id": "o6JxFwt46g7aHTO2pd1s8",
-                                                        "title": "3",
+                                                        "id": "HaKSQo_AlQG4eslyzgTGd",
+                                                        "title": "测试列表3",
                                                         "titleUnedited": true,
                                                         "boundaries": [],
                                                         "summaries": [],
                                                         "instance": {
-                                                            "text": "3",
+                                                            "text": "测试列表3",
                                                             "level": 5
                                                         }
                                                     },
                                                     {
-                                                        "id": "a-cdxsBzOET_IolyiyMnT",
-                                                        "title": "4",
+                                                        "id": "45elwQKl33I8gtfbaSa41",
+                                                        "title": "测试列表4",
                                                         "titleUnedited": true,
                                                         "boundaries": [],
                                                         "summaries": [],
-                                                        "children": {
-                                                            "attached": [
-                                                                {
-                                                                    "id": "5OqRPGey5i3hy6aLI__X9",
-                                                                    "title": "4",
-                                                                    "titleUnedited": true,
-                                                                    "boundaries": [],
-                                                                    "summaries": [],
-                                                                    "instance": {
-                                                                        "text": "4",
-                                                                        "level": 6
-                                                                    }
-                                                                },
-                                                                {
-                                                                    "id": "V3E4T30p7CSthxwGXfzoM",
-                                                                    "title": "5",
-                                                                    "titleUnedited": true,
-                                                                    "boundaries": [],
-                                                                    "summaries": [],
-                                                                    "instance": {
-                                                                        "text": "5",
-                                                                        "level": 6
-                                                                    }
-                                                                },
-                                                                {
-                                                                    "id": "QfZ2eDpSr_HDUUm5Km6F2",
-                                                                    "title": "6",
-                                                                    "titleUnedited": true,
-                                                                    "boundaries": [],
-                                                                    "summaries": [],
-                                                                    "children": {
-                                                                        "attached": [
-                                                                            {
-                                                                                "id": "6GfYZEvK4r2cfTIw4EVE6",
-                                                                                "title": "12122",
-                                                                                "titleUnedited": true,
-                                                                                "boundaries": [],
-                                                                                "summaries": [],
-                                                                                "children": {
-                                                                                    "attached": [
-                                                                                        {
-                                                                                            "id": "Ef86tlauOSjJPQZI1PrTn",
-                                                                                            "title": "阿323",
-                                                                                            "titleUnedited": true,
-                                                                                            "boundaries": [],
-                                                                                            "summaries": [],
-                                                                                            "instance": {
-                                                                                                "text": "阿323",
-                                                                                                "level": 8
-                                                                                            }
-                                                                                        }
-                                                                                    ]
-                                                                                },
-                                                                                "instance": {
-                                                                                    "text": "12122",
-                                                                                    "level": 7
-                                                                                }
-                                                                            }
-                                                                        ]
-                                                                    },
-                                                                    "instance": {
-                                                                        "text": "6",
-                                                                        "level": 6
-                                                                    }
-                                                                }
-                                                            ]
-                                                        },
                                                         "instance": {
-                                                            "text": "4",
+                                                            "text": "测试列表4",
                                                             "level": 5
                                                         }
                                                     }
                                                 ]
                                             },
                                             "instance": {
-                                                "text": "promise",
+                                                "text": "侧室5",
                                                 "level": 4
                                             }
                                         }
                                     ]
                                 },
                                 "instance": {
-                                    "text": "语言特性 ",
-                                    "level": 3
-                                }
-                            }
-                        ]
-                    },
-                    "instance": {
-                        "text": "javascript",
-                        "level": 2
-                    }
-                },
-                {
-                    "id": "h7tMbmapnXSs8KcC3r9SW",
-                    "title": "其他",
-                    "titleUnedited": true,
-                    "boundaries": [],
-                    "summaries": [],
-                    "instance": {
-                        "text": "其他",
-                        "level": 2
-                    }
-                },
-                {
-                    "id": "7r-lX04GaTDbaJ2CeSml9",
-                    "title": "测试 3",
-                    "titleUnedited": true,
-                    "boundaries": [],
-                    "summaries": [],
-                    "children": {
-                        "attached": [
-                            {
-                                "id": "CDSlrFmeKcmXlApD0af5v",
-                                "title": "测试说的顶顶顶顶",
-                                "titleUnedited": true,
-                                "boundaries": [],
-                                "summaries": [],
-                                "instance": {
-                                    "text": "测试说的顶顶顶顶",
+                                    "text": "测试2",
                                     "level": 3
                                 }
                             },
                             {
-                                "id": "58fQGi8I4d8KFaX7PEPDj",
-                                "title": "4",
-                                "titleUnedited": true,
-                                "boundaries": [],
-                                "summaries": [],
-                                "instance": {
-                                    "text": "4",
-                                    "level": 3
-                                }
-                            },
-                            {
-                                "id": "PSHdM7cp46LX9h5tAZ51E",
-                                "title": "d",
+                                "id": "2KfT6LUscwWlzHUfjQfuV",
+                                "title": "侧室3",
                                 "titleUnedited": true,
                                 "boundaries": [],
                                 "summaries": [],
                                 "children": {
                                     "attached": [
                                         {
-                                            "id": "njrQv9_zRRvq_RcOCWjbf",
-                                            "title": "df",
+                                            "id": "GGMRo-rVWKTF4FjomEBAq",
+                                            "title": "侧室6",
                                             "titleUnedited": true,
                                             "boundaries": [],
                                             "summaries": [],
                                             "instance": {
-                                                "text": "df",
+                                                "text": "侧室6",
                                                 "level": 4
                                             }
                                         },
                                         {
-                                            "id": "OGMfv7WwLeUH45xKSR4uM",
-                                            "title": "df",
+                                            "id": "UmxDF7UExBWag2FGNJTqF",
+                                            "title": "侧室7",
                                             "titleUnedited": true,
                                             "boundaries": [],
                                             "summaries": [],
                                             "instance": {
-                                                "text": "df",
-                                                "level": 4
-                                            }
-                                        },
-                                        {
-                                            "id": "wEBjL0dOE80V6m0VyHjNb",
-                                            "title": "ggg",
-                                            "titleUnedited": true,
-                                            "boundaries": [],
-                                            "summaries": [],
-                                            "instance": {
-                                                "text": "ggg",
-                                                "level": 4
-                                            }
-                                        },
-                                        {
-                                            "id": "R3J3KN4kvAaImgO01m5uv",
-                                            "title": "d",
-                                            "titleUnedited": true,
-                                            "boundaries": [],
-                                            "summaries": [],
-                                            "instance": {
-                                                "text": "d",
+                                                "text": "侧室7",
                                                 "level": 4
                                             }
                                         }
                                     ]
                                 },
                                 "instance": {
-                                    "text": "d",
-                                    "level": 3
-                                }
-                            },
-                            {
-                                "id": "kGP5cXzWQ24bPFZ4FkEj3",
-                                "title": "g",
-                                "titleUnedited": true,
-                                "boundaries": [],
-                                "summaries": [],
-                                "instance": {
-                                    "text": "g",
-                                    "level": 3
-                                }
-                            },
-                            {
-                                "id": "zKrut8cHcsSd80B8H4hPQ",
-                                "title": "h",
-                                "titleUnedited": true,
-                                "boundaries": [],
-                                "summaries": [],
-                                "instance": {
-                                    "text": "h",
+                                    "text": "侧室3",
                                     "level": 3
                                 }
                             }
                         ]
                     },
                     "instance": {
-                        "text": "测试 3",
+                        "text": "测试1",
                         "level": 2
                     }
                 }
@@ -356,15 +153,7 @@
         }
     },
     "topicPositioning": "fixed",
-    "relationships": [
-        {
-            "id": "0h-L1BMB956U1j0dQNR4t",
-            "end1Id": "WKcXzXfZPVpa_m9NjvDkC",
-            "end2Id": "kRKTDI2SK8bOta7FNhJrC",
-            "titleUnedited": true,
-            "title": "Relationship Title"
-        }
-    ],
+    "relationships": [],
     "theme": {
         "id": "f8c8e44f-4a4d-43a7-8381-11a152eaf8a3",
         "centralTopic": {

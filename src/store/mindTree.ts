@@ -78,13 +78,13 @@ export const useMindTreeStore = defineStore("mindTree", () => {
       return node.id === currentNode.rootNode.id
     });
     if(levelIndex !== -1) {
-      siblingNodes.forEach((node, index)=>{
-        if(index >= levelIndex) {
-          const subTree = node.instance?.$parent;
-          if(subTree )
-            (subTree as SubTreeType).updateSubTreeOffset(offsetY);
-        }
-      })
+      // siblingNodes.forEach((node, index)=>{
+      //   if(index >= levelIndex) {
+      //     const subTree = node.instance?.$parent;
+      //     if(subTree )
+      //       (subTree as SubTreeType).updateSubTreeOffset(offsetY);
+      //   }
+      // })
     }
 
   };

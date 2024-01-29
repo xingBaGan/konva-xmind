@@ -115,6 +115,7 @@ const MindMapTree = defineComponent<MindMapTree>(
     const rootInstance = ref();
     const halfLength = children.length / 2;
     const subTreeRect = ref();
+    // childNodes rect
     const subChildTreeRect = ref();
     const lastOffset = ref(0);
     const newOffsetY = computed(() => props.rootNode.y + lastOffset.value);
@@ -211,6 +212,7 @@ const MindMapTree = defineComponent<MindMapTree>(
             lineColor={color.value}
             id={child.id}
             onUpdateSubtreeRect={(payload: SubTreeRectPayload) => {
+              console.log(`update childRect %c ${JSON.stringify(payload.childRect)}`,  "color: yellow; font-style: italic; background-color: blue;padding: 2px");
               subChildTreeRect.value = payload.childRect;
             }}
           ></MindMapTree>
@@ -223,12 +225,13 @@ const MindMapTree = defineComponent<MindMapTree>(
         const rect = getMergedTwoRect(
           subTreeRect.value,
           subChildTreeRect.value
-        );
-        subTreeRect.value = rect;
-        emit("updateSubtreeRect", {
-          childRect: rect,
-          title: props.rootNode.title,
-        });
+          );
+          subTreeRect.value = rect;
+          emit("updateSubtreeRect", {
+            childRect: rect,
+            title: props.rootNode.title,
+          });
+          console.log( '%c merged subChildrenRect', "color: red; ", subTreeRect.value, subChildTreeRect.value,'merged rect', rect);
       }
     });
 
@@ -273,11 +276,14 @@ const MindMapTree = defineComponent<MindMapTree>(
           };
 
           subTreeRect.value = rect;
+          if(!subChildTreeRect.value) {
+            subChildTreeRect.value = rect;
+          }
           emit("updateSubtreeRect", {
             childRect: rect,
             title: props.rootNode.title,
           });
-          props.rootNode.subTreeRect = subTreeRect.value;
+          console.log('new childrenRect', subTreeRect.value, subChildTreeRect.value, node.title);
         }
       }
     });
