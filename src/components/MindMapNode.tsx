@@ -148,7 +148,8 @@ export default defineComponent<MindMapNode>(
       ...nodeStyle,
     }));
 
-    const isDev = !import.meta.env.PROD;
+    // const isDev = !import.meta.env.PROD;
+const isDev = true
     const circle = computed(() => ({
       x: props.x,
       y: props.y,

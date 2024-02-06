@@ -6,7 +6,10 @@ import {
   ref,
   watch,
   type ComponentPublicInstance,
-  effect,
+  type Ref,
+  nextTick,
+  getCurrentInstance,
+  inject,
 } from "vue";
 import MindMapNode, {
   NodePositionType,
@@ -17,6 +20,8 @@ import MindMapNode, {
 import { useMindTreeStore } from "../store/mindTree";
 import MindMapLines from "./MindMapLines";
 import type { TreeNodeType } from "../store/type";
+import { adjustSiblingChild } from '../utils/index'
+import { showChildrenSymbol } from '../context/global'
 type MindMapNode = {
   title: string;
 };
@@ -54,7 +59,9 @@ type MindMapTree = {
 export interface exposeAttribute {
   updateSubTreeOffset: (offsetY: number) => void;
   getRootNodeInstance: () => TreeNodeType;
-  subTreeRect: Rect;
+  childrenRectArea: Rect;
+  childrenSubtreeRectArea: Rect;
+  childrenSubTrees: SubTreeType[];
 }
 
 export type SubTreeType = ComponentPublicInstance<MindMapTree, exposeAttribute>;
@@ -101,6 +108,7 @@ function getMergedTwoRect(rect1: Rect, rect2: Rect): Rect {
 
 const MindMapTree = defineComponent<MindMapTree>(
   (props, { emit, expose }) => {
+    const treeGap = 10;
     const store = useMindTreeStore();
     const node = reactive(props.rootNode);
     const level = computed(() => props.sequence.split("-").length);
@@ -114,9 +122,9 @@ const MindMapTree = defineComponent<MindMapTree>(
     const childrenSubTrees: any[] = reactive([]);
     const rootInstance = ref();
     const halfLength = children.length / 2;
-    const subTreeRect = ref();
+    const childrenSubtreeRectArea = ref();
     // childNodes rect
-    const subChildTreeRect = ref();
+    const childrenRectArea = ref();
     const lastOffset = ref(0);
     const newOffsetY = computed(() => props.rootNode.y + lastOffset.value);
     const addChildPosToSubTree = (position: ChildPosition) => {
@@ -135,16 +143,24 @@ const MindMapTree = defineComponent<MindMapTree>(
       }
     };
 
-    function updateSubTreeOffset(offsetY: number) {
-      if (lastOffset.value <= offsetY / 2) {
-        lastOffset.value = offsetY / 2;
+    async function updateSubTreeOffset(offsetY: number) {
+      const offset = offsetY;
+      if (offset > lastOffset.value) {
+        lastOffset.value = offset;
       }
     }
+
+    watch([lastOffset], async () => {
+      childrenSubtreeRectArea.value.y = childrenSubtreeRectArea.value.y + lastOffset.value
+    })
+
     expose({
       updateSubTreeOffset,
       rootNode: props.rootNode,
       getRootNodeInstance: () => rootInstance.value,
-      subTreeRect,
+      childrenRectArea,
+      childrenSubTrees,
+      childrenSubtreeRectArea,
     });
 
     if (!children.length) {
@@ -212,28 +228,38 @@ const MindMapTree = defineComponent<MindMapTree>(
             lineColor={color.value}
             id={child.id}
             onUpdateSubtreeRect={(payload: SubTreeRectPayload) => {
-              console.log(`update childRect %c ${JSON.stringify(payload.childRect)}`,  "color: yellow; font-style: italic; background-color: blue;padding: 2px");
-              subChildTreeRect.value = payload.childRect;
+              if (payload.title === '侧室6\t') {
+                console.log(`update childRect %c ${JSON.stringify(payload.childRect)}`, "color: yellow; font-style: italic; background-color: blue;padding: 2px", payload.title, childrenSubtreeRectArea.value, childrenRectArea.value);
+              }
+              childrenSubtreeRectArea.value = payload.childRect;
+              updateChildrenSubtreeRectArea();
             }}
           ></MindMapTree>
         );
       });
     });
 
-    watchEffect(() => {
-      if (subChildTreeRect.value && subTreeRect.value) {
+    const updateChildrenSubtreeRectArea = async () => {
+      if (childrenRectArea.value && childrenSubtreeRectArea.value) {
         const rect = getMergedTwoRect(
-          subTreeRect.value,
-          subChildTreeRect.value
-          );
-          subTreeRect.value = rect;
-          emit("updateSubtreeRect", {
-            childRect: rect,
-            title: props.rootNode.title,
-          });
-          console.log( '%c merged subChildrenRect', "color: red; ", subTreeRect.value, subChildTreeRect.value,'merged rect', rect);
+          childrenSubtreeRectArea.value,
+          childrenRectArea.value
+        );
+
+        if (props.rootNode.title === '测试1') {
+          console.log(`%c merged subChildrenRect ${props.rootNode.title}`, "color: red; ", childrenSubtreeRectArea.value, childrenRectArea.value, 'merged rect', rect);
+        }
+
+        childrenSubtreeRectArea.value = rect;
+        await nextTick();
+        emit("updateSubtreeRect", {
+          childRect: rect,
+          title: props.rootNode.title,
+        });
       }
-    });
+    }
+
+    // watch([childrenSubtreeRectArea],);
 
     const childrenRects = computed(() =>
       childrenSubTrees.map((subTreeInstance) => {
@@ -241,10 +267,14 @@ const MindMapTree = defineComponent<MindMapTree>(
       })
     );
 
-    watch([childrenSubTrees, childrenRects], () => {
+    const currentComponentInstance = getCurrentInstance();
+    const parentComponentInstance = currentComponentInstance?.parent;
+
+    watch([childrenSubTrees, childrenRects], async () => {
       if (
         childrenSubTrees &&
-        childrenSubTrees.length === node.children.attached.length
+        childrenSubTrees.length === node.children.attached.length &&
+        parentComponentInstance
       ) {
         const maxWidth = childrenRects.value.reduce((max, rect: Rect) => {
           if (rect?.width > max) {
@@ -254,6 +284,7 @@ const MindMapTree = defineComponent<MindMapTree>(
         }, 0);
 
         const rects = childrenRects.value;
+        let rect;
         const lastItemIndex = rects.length - 1;
         if (rects[lastItemIndex]) {
           const lastNode = rects[lastItemIndex];
@@ -268,48 +299,89 @@ const MindMapTree = defineComponent<MindMapTree>(
             rangeY,
           ];
 
-          const rect = {
+          rect = {
             x: node.childrenRect[0],
             y: node.childrenRect[1],
             width: node.childrenRect[2],
             height: node.childrenRect[3],
           };
 
-          subTreeRect.value = rect;
-          if(!subChildTreeRect.value) {
-            subChildTreeRect.value = rect;
+          childrenSubtreeRectArea.value = rect;
+          updateChildrenSubtreeRectArea();
+          if (!childrenRectArea.value) {
+            childrenRectArea.value = rect;
           }
+        }
+
+        const childrenSubTree = parentComponentInstance.exposed.childrenSubTrees;
+        if (childrenSubTree) {
+          await nextTick();
+          // console.log(`${node.title} ${node.id}`, childrenSubTree, childrenSubTree.length);
+          const index = childrenSubTree.findIndex((subTree: Ref<SubTreeType>) => {
+            const id = subTree.value.rootNode.id;
+            return id === node.id;
+          });
+          if (index !== -1) {
+            const newArr = childrenSubTree.slice(index + 1);
+            let currentNode = childrenSubTree[index];
+            newArr.forEach(async (subTree: Ref<SubTreeType>) => {
+              adjustSiblingChild(currentNode.value, subTree.value)
+              await nextTick();
+              currentNode = subTree;
+            });
+          }
+        }
+        if(rect) {
           emit("updateSubtreeRect", {
             childRect: rect,
             title: props.rootNode.title,
           });
-          console.log('new childrenRect', subTreeRect.value, subChildTreeRect.value, node.title);
         }
       }
     });
-    const isDev = !import.meta.env.PROD;
+    // const isDev = !import.meta.env.PROD;
+    const isDev = true
     const subTreeDebugMessage = computed(
       () =>
         `${JSON.stringify(node.childrenRect)} \n ${JSON.stringify(
-          subTreeRect.value
+          childrenSubtreeRectArea.value
         )}`
     );
     const isLinesOver = ref(false);
     const showSubtreeRect = computed(() => isDev && isLinesOver.value);
     const subtreeRectConfig = computed(
       () =>
-        subTreeRect.value && {
+        childrenSubtreeRectArea.value && {
           points: [
-            subTreeRect.value.x,
-            subTreeRect.value.y,
-            subTreeRect.value.x + subTreeRect.value.width,
-            subTreeRect.value.y,
-            subTreeRect.value.x + subTreeRect.value.width,
-            subTreeRect.value.y + subTreeRect.value.height,
-            subTreeRect.value.x,
-            subTreeRect.value.y + subTreeRect.value.height,
-            subTreeRect.value.x,
-            subTreeRect.value.y,
+            childrenSubtreeRectArea.value.x,
+            childrenSubtreeRectArea.value.y,
+            childrenSubtreeRectArea.value.x + childrenSubtreeRectArea.value.width,
+            childrenSubtreeRectArea.value.y,
+            childrenSubtreeRectArea.value.x + childrenSubtreeRectArea.value.width,
+            childrenSubtreeRectArea.value.y + childrenSubtreeRectArea.value.height,
+            childrenSubtreeRectArea.value.x,
+            childrenSubtreeRectArea.value.y + childrenSubtreeRectArea.value.height,
+            childrenSubtreeRectArea.value.x,
+            childrenSubtreeRectArea.value.y,
+          ],
+          dash: [10, 5],
+        }
+    );
+    const showChild = inject<Ref<Boolean>>(showChildrenSymbol)!;
+    const childrenRectConfig = computed(
+      () =>
+        childrenRectArea.value && {
+          points: [
+            childrenRectArea.value.x,
+            childrenRectArea.value.y,
+            childrenRectArea.value.x + childrenRectArea.value.width,
+            childrenRectArea.value.y,
+            childrenRectArea.value.x + childrenRectArea.value.width,
+            childrenRectArea.value.y + childrenRectArea.value.height,
+            childrenRectArea.value.x,
+            childrenRectArea.value.y + childrenRectArea.value.height,
+            childrenRectArea.value.x,
+            childrenRectArea.value.y,
           ],
           dash: [10, 5],
         }
@@ -380,17 +452,27 @@ const MindMapTree = defineComponent<MindMapTree>(
                 stroke: "red",
               }}
             ></v-line>
-
             <v-text
               config={{
-                x: subTreeRect.value.x,
-                y: subTreeRect.value.y,
-                text: `(${subTreeRect.value.x}, ${subTreeRect.value.y})\n width: ${subTreeRect.value.width} \n height ${subTreeRect.value.height}`,
+                x: childrenSubtreeRectArea.value.x,
+                y: childrenSubtreeRectArea.value.y,
+                text: `(${childrenSubtreeRectArea.value.x}, ${childrenSubtreeRectArea.value.y})\n width: ${childrenSubtreeRectArea.value.width} \n height ${childrenSubtreeRectArea.value.height}`,
                 fill: "grey",
               }}
             ></v-text>
           </>
         )}
+        {
+          showChild.value && (
+            <>
+              <v-line
+                config={{
+                  ...childrenRectConfig.value,
+                  stroke: "blue",
+                }}
+              ></v-line>
+            </>
+          )}
       </>
     );
   },

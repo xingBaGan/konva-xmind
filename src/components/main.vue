@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { inject, ref, onMounted, watch, computed, effect, watchEffect } from 'vue';
+import { inject, ref, onMounted, watch, computed, effect, watchEffect, type Ref } from 'vue';
 import { configSymbol, lineColorsSymbol } from '../context/styleContext'
 import MindMapTree, { type RootNode } from './MindMapSubTree';
-import { type Rect } from './MindMapNode';
 import { useMindTreeStore, updateInitialTreeData } from '../store/mindTree';
-import type { SubTreeType } from "../store/type";
+import { showChildrenSymbol } from '../context/global'
 import Konva from 'konva';
+import { log } from 'console';
 const props = defineProps(['data']);
 if (props.data) {
   updateInitialTreeData(props.data.rootTopic);
@@ -124,22 +124,6 @@ function addGrid(stage: any) {
   layer.add();
 }
 
-function getOffsetYWhenInRange(siblingNode: SubTreeType, range: Rect ): number {
-  const currentRect = siblingNode.subTreeRect;
-  let offsetY = 0;
-  if( currentRect.y < range.y + range.height ) {
-    offsetY = range.y + range.height - currentRect.y;
-  }
-  return offsetY;
-}
-
-function adjustSiblingChild(currentNode: SubTreeType, siblingNode: SubTreeType) {
-  const offsetY =  getOffsetYWhenInRange(siblingNode, currentNode.subTreeRect);
-  if(offsetY) {
-    store.updateBrotherPosition(siblingNode, offsetY)
-  }
-}
-
 onMounted(() => {
   if (!stage.value) return;
   const stageInstance = stage.value.getStage();
@@ -165,23 +149,24 @@ onMounted(() => {
   });
 
 
-  const parents: SubTreeType[] = store.rootNode.children.attached.map(item => item.instance.$parent);
-  setTimeout(() => {
-    let currentSubTree: SubTreeType;
-    for(let node of parents) {
-      if (currentSubTree && node.subTreeRect) {
-        adjustSiblingChild(currentSubTree, node);
-        break;
-      }
+  // const parents: SubTreeType[] = store.rootNode.children.attached.map(item => item.instance.$parent);
+  // setTimeout(() => {
+  //   let currentSubTree: SubTreeType;
+  //   for(let node of parents) {
+  //     if (currentSubTree && node.childrenRectArea) {
+  //       adjustSiblingChild(currentSubTree, node);
+  //       break;
+  //     }
 
-      if( node.subTreeRect) {
-        currentSubTree = node
-      }
-    }
+  //     if( node.childrenRectArea) {
+  //       currentSubTree = node
+  //     }
+  //   }
 
-  }, 0)
+  // }, 0)
 });
-const isDev = !import.meta.env.PROD;
+// const isDev = !import.meta.env.PROD;
+const isDev = true
 const lineConfig = computed(() => {
   if (store.twoNodes.length === 2)
     return ({
@@ -207,10 +192,14 @@ const textConfig = computed(() => {
     })
   }
 })
-
+const showChild = inject<Ref<Boolean>>(showChildrenSymbol)!;
+const toggleShowChildrenVisible = ()=>{
+  showChild.value = !showChild.value;
+}
 </script>
 
 <template>
+  <button @click="toggleShowChildrenVisible">toggle show children rects</button>
   <v-stage :config="config" ref="stage">
     <v-layer ref="layer">
       <MindMapTree :rootNode="(rootNode as unknown as RootNode)" sequence="1" :lineColorArr="lineColorArr"
