@@ -219,7 +219,7 @@ const isDev = true
     function getRect() {
       if (rectRef.value) {
         const node = rectRef.value.getNode();
-        const Rect = node.getClientRect();
+        const Rect = node.getClientRect();        
         return Rect;
       }
       return null;

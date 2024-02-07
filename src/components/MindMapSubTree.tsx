@@ -142,11 +142,23 @@ const MindMapTree = defineComponent<MindMapTree>(
         positionList.push(position);
       }
     };
-
+    const currentComponentInstance = getCurrentInstance();
     async function updateSubTreeOffset(offsetY: number) {
       const offset = offsetY;
+
       if (offset > lastOffset.value) {
         lastOffset.value = offset;
+        props.rootNode.rootPos = reactive({
+          ...props.rootNode.rootPos,
+          y: newOffsetY.value,
+        });
+        emit(
+          "updateRootNode",
+          {
+            rootNode: props.rootNode,
+            instance: currentComponentInstance,
+          }
+        )
       }
     }
 
@@ -191,6 +203,39 @@ const MindMapTree = defineComponent<MindMapTree>(
       };
     }
 
+    const updateChildrenNode = async (payload: {
+      rootNode: RootNode;
+      instance: SubTreeType;
+    }) => {
+      const index = childrenSubTrees.findIndex((child) => {
+        return child.value.rootNode.id === payload.rootNode.id
+      });
+      await nextTick();
+      const oldRect = childrenRects.value[index];
+      const node = payload.instance.exposed.getRootNodeInstance();
+      const newRect = node.getRect();
+      childrenRects.value.splice(index, 1, newRect);
+      // console.log('data', node, newRect, oldRect);
+    }
+
+    watchEffect(() => {
+      childrenSubTrees.forEach((subTreeRef) => {
+        if(subTreeRef.value && subTreeRef.value.rootNode) {
+          watch(() => subTreeRef.value && subTreeRef.value.rootNode && subTreeRef.value.rootNode.rootPos, (newValue) => {
+            // 当子组件的 someProperty 发生变化时执行的逻辑
+            if(subTreeRef.value && subTreeRef.value.rootNode) {
+              console.log('subTreeRef',subTreeRef.value.rootNode.title ,subTreeRef.value.rootNode.rootPos);
+              const rect = getChildrenNodeRect(childrenRects);
+              console.log('rect',rect);
+              
+            }
+            
+          }, { deep: true });
+        }
+      });
+    });
+
+
     const childrenNodes = computed(() => {
       const isOdd = halfLength % 1 === 0.5;
       return children.map((child, index) => {
@@ -213,8 +258,9 @@ const MindMapTree = defineComponent<MindMapTree>(
 
         const instance = ref(null);
 
+        // Collect the subTree node.
         watchEffect(() => {
-          if (instance.value && childrenSubTrees.length < children.length) {
+          if (instance && instance.value && childrenSubTrees.length < children.length) {
             childrenSubTrees.push(instance);
           }
         });
@@ -228,12 +274,10 @@ const MindMapTree = defineComponent<MindMapTree>(
             lineColor={color.value}
             id={child.id}
             onUpdateSubtreeRect={(payload: SubTreeRectPayload) => {
-              if (payload.title === '侧室6\t') {
-                console.log(`update childRect %c ${JSON.stringify(payload.childRect)}`, "color: yellow; font-style: italic; background-color: blue;padding: 2px", payload.title, childrenSubtreeRectArea.value, childrenRectArea.value);
-              }
               childrenSubtreeRectArea.value = payload.childRect;
               updateChildrenSubtreeRectArea();
             }}
+            onUpdateRootNode={updateChildrenNode}
           ></MindMapTree>
         );
       });
@@ -245,11 +289,6 @@ const MindMapTree = defineComponent<MindMapTree>(
           childrenSubtreeRectArea.value,
           childrenRectArea.value
         );
-
-        if (props.rootNode.title === '测试1') {
-          console.log(`%c merged subChildrenRect ${props.rootNode.title}`, "color: red; ", childrenSubtreeRectArea.value, childrenRectArea.value, 'merged rect', rect);
-        }
-
         childrenSubtreeRectArea.value = rect;
         await nextTick();
         emit("updateSubtreeRect", {
@@ -259,16 +298,65 @@ const MindMapTree = defineComponent<MindMapTree>(
       }
     }
 
-    // watch([childrenSubtreeRectArea],);
 
-    const childrenRects = computed(() =>
-      childrenSubTrees.map((subTreeInstance) => {
-        return subTreeInstance.value?.getRootNodeInstance().getRect();
-      })
-    );
+    const childrenRects = computed(() => childrenSubTrees.map((subTreeInstance) => {
+      return subTreeInstance.value?.getRootNodeInstance().getRect();
+    }));
 
-    const currentComponentInstance = getCurrentInstance();
     const parentComponentInstance = currentComponentInstance?.parent;
+    const getChildrenNodeRect = (childrenRects: Ref<any[]>) => {
+      const maxWidth = childrenRects.value.reduce((max, rect: Rect) => {
+        if (rect?.width > max) {
+          max = rect.width;
+        }
+        return max;
+      }, 0);
+
+      const rects = childrenRects.value;
+      let rect;
+      const lastItemIndex = rects.length - 1;
+      if (rects[lastItemIndex]) {
+        const lastNode = rects[lastItemIndex];
+        const lastNodePosY = lastNode.y;
+        const firstNode = rects[0];
+        const firstNodePosY = firstNode.y;
+        const rangeY = lastNodePosY - firstNodePosY + lastNode.height;
+        node.childrenRect = [
+          firstNode.x,
+          firstNode.y,
+          Math.ceil(maxWidth),
+          rangeY,
+        ];
+
+        rect = {
+          x: node.childrenRect[0],
+          y: node.childrenRect[1],
+          width: node.childrenRect[2],
+          height: node.childrenRect[3],
+        };
+      }
+      return rect;
+    }
+
+    const updateSiblingPosition = async (parentComponentInstance: any) => {
+      const childrenSubTree = parentComponentInstance.exposed.childrenSubTrees;
+      if (childrenSubTree) {
+        await nextTick();
+        const index = childrenSubTree.findIndex((subTree: Ref<SubTreeType>) => {
+          const id = subTree.value.rootNode.id;
+          return id === node.id;
+        });
+        if (index !== -1) {
+          const newArr = childrenSubTree.slice(index + 1);
+          let currentNode = childrenSubTree[index];
+          newArr.forEach(async (subTree: Ref<SubTreeType>) => {
+            await nextTick();
+            adjustSiblingChild(currentNode.value, subTree.value);
+            currentNode = subTree;
+          });
+        }
+      }
+    }
 
     watch([childrenSubTrees, childrenRects], async () => {
       if (
@@ -276,62 +364,15 @@ const MindMapTree = defineComponent<MindMapTree>(
         childrenSubTrees.length === node.children.attached.length &&
         parentComponentInstance
       ) {
-        const maxWidth = childrenRects.value.reduce((max, rect: Rect) => {
-          if (rect?.width > max) {
-            max = rect.width;
-          }
-          return max;
-        }, 0);
-
-        const rects = childrenRects.value;
-        let rect;
-        const lastItemIndex = rects.length - 1;
-        if (rects[lastItemIndex]) {
-          const lastNode = rects[lastItemIndex];
-          const lastNodePosY = lastNode.y;
-          const firstNode = rects[0];
-          const firstNodePosY = firstNode.y;
-          const rangeY = lastNodePosY - firstNodePosY + lastNode.height;
-          node.childrenRect = [
-            firstNode.x,
-            firstNode.y,
-            Math.ceil(maxWidth),
-            rangeY,
-          ];
-
-          rect = {
-            x: node.childrenRect[0],
-            y: node.childrenRect[1],
-            width: node.childrenRect[2],
-            height: node.childrenRect[3],
-          };
-
-          childrenSubtreeRectArea.value = rect;
-          updateChildrenSubtreeRectArea();
-          if (!childrenRectArea.value) {
-            childrenRectArea.value = rect;
-          }
+        const rect = getChildrenNodeRect(childrenRects);
+        if (!childrenRects.value[0]) return
+        childrenSubtreeRectArea.value = rect;
+        updateChildrenSubtreeRectArea();
+        if (!childrenRectArea.value) {
+          childrenRectArea.value = rect;
         }
-
-        const childrenSubTree = parentComponentInstance.exposed.childrenSubTrees;
-        if (childrenSubTree) {
-          await nextTick();
-          // console.log(`${node.title} ${node.id}`, childrenSubTree, childrenSubTree.length);
-          const index = childrenSubTree.findIndex((subTree: Ref<SubTreeType>) => {
-            const id = subTree.value.rootNode.id;
-            return id === node.id;
-          });
-          if (index !== -1) {
-            const newArr = childrenSubTree.slice(index + 1);
-            let currentNode = childrenSubTree[index];
-            newArr.forEach(async (subTree: Ref<SubTreeType>) => {
-              adjustSiblingChild(currentNode.value, subTree.value)
-              await nextTick();
-              currentNode = subTree;
-            });
-          }
-        }
-        if(rect) {
+        await updateSiblingPosition(parentComponentInstance);
+        if (rect) {
           emit("updateSubtreeRect", {
             childRect: rect,
             title: props.rootNode.title,
@@ -386,6 +427,12 @@ const MindMapTree = defineComponent<MindMapTree>(
           dash: [10, 5],
         }
     );
+
+    // watch([childrenRects], () => {
+    //   if (node.title === '测试1') {
+    //     debugger
+    //   }
+    // })
 
     return () => (
       <>
@@ -444,7 +491,7 @@ const MindMapTree = defineComponent<MindMapTree>(
             text={subTreeDebugMessage.value}
           />
         )}
-        {showSubtreeRect.value && (
+        {showSubtreeRect.value && subtreeRectConfig.value && (
           <>
             <v-line
               config={{
@@ -463,7 +510,7 @@ const MindMapTree = defineComponent<MindMapTree>(
           </>
         )}
         {
-          showChild.value && (
+          showChild.value && childrenRectConfig.value && (
             <>
               <v-line
                 config={{
@@ -479,8 +526,9 @@ const MindMapTree = defineComponent<MindMapTree>(
   {
     props,
     name: "MindMapTree",
-    emits: ["jointLine", "updateSubtreeRect"],
+    emits: ["jointLine", "updateSubtreeRect", "updateRootNode"],
   }
 );
 
 export default MindMapTree;
+ 

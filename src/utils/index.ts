@@ -13,6 +13,5 @@ function getOffsetYWhenInRange(siblingNode: SubTreeType, range: Rect ): number {
 
 export function adjustSiblingChild(currentNode: SubTreeType, siblingNode: SubTreeType) {
   const offsetY =  getOffsetYWhenInRange(siblingNode, currentNode.childrenSubtreeRectArea);
-  // console.log('siblingNode', siblingNode, offsetY);
   siblingNode.updateSubTreeOffset(offsetY);
 }
