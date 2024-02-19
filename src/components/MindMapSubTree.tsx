@@ -235,15 +235,18 @@ const MindMapTree = defineComponent<MindMapTree>(
       });
     });
 
-
+    const textTopSize = 6;
+    const textIncreaseNumber = 18;
     const childrenNodes = computed(() => {
       const isOdd = halfLength % 1 === 0.5;
+      const maxTextLengthOnCurrentLevel = store.getLevelMaxTextLength(level.value - 1);
+      const moreGap = maxTextLengthOnCurrentLevel > textTopSize ? (maxTextLengthOnCurrentLevel - textTopSize) * textIncreaseNumber : 0;    
       return children.map((child, index) => {
         const nextRootNode = computed(() =>
           reactive({
             children: child.children,
             title: child.title,
-            x: props.rootNode.x + offsetX,
+            x: props.rootNode.x + offsetX  + moreGap,
             y:
               newOffsetY.value +
               (index - Math.floor(halfLength)) * offsetY +

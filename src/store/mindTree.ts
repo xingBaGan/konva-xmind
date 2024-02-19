@@ -57,36 +57,28 @@ export const useMindTreeStore = defineStore("mindTree", () => {
     return BFSTravel(rootNode);
   });
 
+  const getNodesByLevel = (level: number): Topic[] => {
+    if (!rootNode) return [];
+    return BFSTravel(rootNode).filter((node) => node.instance && (node.instance.level === level));
+  }
+
+  const getLevelMaxTextLength = (level: number): number=> {
+    if (!rootNode) return 0;
+    const nodes = BFSTravelArr.value;
+    const lastNode = nodes[nodes.length - 1];
+    const maxLevel = lastNode.instance && lastNode.instance.level;
+    const newArr = new Array(maxLevel).fill(0);
+    const levelNodesArr = newArr.map((_,index)=>getNodesByLevel(index + 1));
+    const levelMaxTextLength = levelNodesArr.map((nodes)=>nodes.reduce((max, node)=>  Math.max(max,node.instance? node.instance.text.length: 0), 0));
+    return levelMaxTextLength[level];
+  }
+
   const updateNodeInstance = (id: string, instance: TreeNodeType) => {
     const treeNode = DFSTravelArr.value.find((node) => {
       return id === node.id;
     });
     if (!treeNode) return;
     treeNode.instance = instance;
-  };
-
-  const updateBrotherPosition = (
-    currentNode: SubTreeType,
-    offsetY: number
-  ) => {
-    const currentTreeNode = currentNode?.getRootNodeInstance();
-    const currentLevel = currentTreeNode.level;
-    const siblingNodes = BFSTravelArr.value.filter((node)=>{
-      return node.instance?.level === currentLevel;
-    });
-    const levelIndex = siblingNodes.findIndex((node: Topic)=>{
-      return node.id === currentNode.rootNode.id
-    });
-    if(levelIndex !== -1) {
-      // siblingNodes.forEach((node, index)=>{
-      //   if(index >= levelIndex) {
-      //     const subTree = node.instance?.$parent;
-      //     if(subTree )
-      //       (subTree as SubTreeType).updateSubTreeOffset(offsetY);
-      //   }
-      // })
-    }
-
   };
 
   const twoNodes = ref<any>([]);
@@ -102,8 +94,8 @@ export const useMindTreeStore = defineStore("mindTree", () => {
     DFSTravelArr,
     BFSTravelArr,
     updateNodeInstance,
-    updateBrotherPosition,
     patchNode,
+    getLevelMaxTextLength,
   };
 });
 
