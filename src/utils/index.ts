@@ -1,17 +1,23 @@
 import type { SubTreeType } from "../store/type";
 import { type Rect } from '../components/MindMapNode';
 
-function getOffsetYWhenInRange(siblingNode: SubTreeType, range: Rect ): number {
-  const currentRect = siblingNode.childrenSubtreeRectArea;
-
+function getOffsetYWhenInRange(topRect: Rect, bottomRect: Rect,): number {
   let offsetY = 0;
-  if( range && currentRect && currentRect.y < range.y + range.height ) {
-    offsetY = range.y + range.height - currentRect.y;
+  if (topRect && bottomRect && bottomRect.y < topRect.y + topRect.height) {
+    offsetY = topRect.y + topRect.height - bottomRect.y;
   }
   return offsetY;
 }
 
-export function adjustSiblingChild(currentNode: SubTreeType, siblingNode: SubTreeType) {
-  const offsetY =  getOffsetYWhenInRange(siblingNode, currentNode.childrenSubtreeRectArea);
-  siblingNode.updateSubTreeOffset(offsetY);
+export async function adjustSiblingChild(currentNode: SubTreeType, siblingNode: SubTreeType, restArr: Array<SubTreeType>) {
+  if (!(currentNode && siblingNode && currentNode.rootNode && siblingNode.rootNode)) return;
+  const topRect = currentNode.childrenSubtreeRectArea;
+  const bottomRect = siblingNode.childrenSubtreeRectArea;
+  const offsetY = getOffsetYWhenInRange(topRect, bottomRect);
+  if(offsetY > 0) {
+    for (let index = 0; index < restArr.length; index++) {
+      const element = restArr[index];
+      element.updateSubTreeOffset && element.updateSubTreeOffset(offsetY);
+    }
+  }
 }

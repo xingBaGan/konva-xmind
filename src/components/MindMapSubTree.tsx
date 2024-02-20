@@ -163,7 +163,8 @@ const MindMapTree = defineComponent<MindMapTree>(
     }
 
     watch([lastOffset], async () => {
-      childrenSubtreeRectArea.value.y = childrenSubtreeRectArea.value.y + lastOffset.value
+      if (childrenSubtreeRectArea.value)
+        childrenSubtreeRectArea.value.y = childrenSubtreeRectArea.value.y + lastOffset.value
     })
 
     expose({
@@ -213,23 +214,25 @@ const MindMapTree = defineComponent<MindMapTree>(
       await nextTick();
       const oldRect = childrenRects.value[index];
       const node = payload.instance.exposed.getRootNodeInstance();
+      console.log('exposed', payload.instance.exposed.childrenRectArea.value);
       const newRect = node.getRect();
       childrenRects.value.splice(index, 1, newRect);
-      // console.log('data', node, newRect, oldRect);
+      childrenRectArea.value = payload.instance.exposed.childrenRectArea.value
+      // console.log('data', node, newRect,'old', oldRect);
     }
 
     watchEffect(() => {
       childrenSubTrees.forEach((subTreeRef) => {
-        if(subTreeRef.value && subTreeRef.value.rootNode) {
+        if (subTreeRef.value && subTreeRef.value.rootNode) {
           watch(() => subTreeRef.value && subTreeRef.value.rootNode && subTreeRef.value.rootNode.rootPos, (newValue) => {
             // 当子组件的 someProperty 发生变化时执行的逻辑
-            if(subTreeRef.value && subTreeRef.value.rootNode) {
-              console.log('subTreeRef',subTreeRef.value.rootNode.title ,subTreeRef.value.rootNode.rootPos);
+            if (subTreeRef.value && subTreeRef.value.rootNode) {
+              console.log('subTreeRef', subTreeRef.value.rootNode.title, subTreeRef.value.rootNode.rootPos);
               const rect = getChildrenNodeRect(childrenRects);
-              console.log('rect',rect);
-              
+              console.log('rect', rect);
+
             }
-            
+
           }, { deep: true });
         }
       });
@@ -240,13 +243,13 @@ const MindMapTree = defineComponent<MindMapTree>(
     const childrenNodes = computed(() => {
       const isOdd = halfLength % 1 === 0.5;
       const maxTextLengthOnCurrentLevel = store.getLevelMaxTextLength(level.value - 1);
-      const moreGap = maxTextLengthOnCurrentLevel > textTopSize ? (maxTextLengthOnCurrentLevel - textTopSize) * textIncreaseNumber : 0;    
+      const moreGap = maxTextLengthOnCurrentLevel > textTopSize ? (maxTextLengthOnCurrentLevel - textTopSize) * textIncreaseNumber : 0;
       return children.map((child, index) => {
         const nextRootNode = computed(() =>
           reactive({
             children: child.children,
             title: child.title,
-            x: props.rootNode.x + offsetX  + moreGap,
+            x: props.rootNode.x + offsetX + moreGap,
             y:
               newOffsetY.value +
               (index - Math.floor(halfLength)) * offsetY +
@@ -350,12 +353,13 @@ const MindMapTree = defineComponent<MindMapTree>(
           return id === node.id;
         });
         if (index !== -1) {
-          const newArr = childrenSubTree.slice(index + 1);
-          let currentNode = childrenSubTree[index];
-          newArr.forEach(async (subTree: Ref<SubTreeType>) => {
-            await nextTick();
-            adjustSiblingChild(currentNode.value, subTree.value);
-            currentNode = subTree;
+          const newArr = childrenSubTree.slice(index).filter((item: any) => item.value && item.value.childrenSubtreeRectArea).map((item: any) => item.value);
+          newArr.forEach(async (subTree: Ref<SubTreeType>, idx: number) => {
+            const restArr = childrenSubTree.slice(idx + 1).map((item: any) => item.value);
+            if (newArr[idx + 1]) {
+              adjustSiblingChild(newArr[idx], newArr[idx + 1], restArr);
+            }
+            // console.log(idx, 'updated childrenSubTree', childrenSubTree.filter((item: any) => item.value.childrenSubtreeRectArea).map((item: any) => item.value.childrenSubtreeRectArea));
           });
         }
       }
@@ -534,4 +538,3 @@ const MindMapTree = defineComponent<MindMapTree>(
 );
 
 export default MindMapTree;
- 
