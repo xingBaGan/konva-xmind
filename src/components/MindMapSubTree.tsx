@@ -147,9 +147,11 @@ const MindMapTree = defineComponent<MindMapTree>(
     const parentComponentInstance = currentComponentInstance?.parent;
     async function updateSubTreeOffset(offsetY: number) {
       const offset = offsetY;
+      console.log('update', node.title, offsetY);
 
       if (offset > lastOffset.value) {
-        lastOffset.value = offset;
+        lastOffset.value = offsetY;
+        // lastOffset.value = lastOffset.value + offset;
         props.rootNode.rootPos = reactive({
           ...props.rootNode.rootPos,
           y: newOffsetY.value,
@@ -213,9 +215,7 @@ const MindMapTree = defineComponent<MindMapTree>(
       rootNode: RootNode;
       instance: SubTreeType;
     }) => {
-      // await nextTick();
-      // console.log('exposed', payload.instance.exposed.childrenRectArea.value, payload.instance.exposed.rootNode.title);
-      // console.log('parentComponentInstance', allChildrenSubTreesInCurrent.value);
+    
     }
 
     const textTopSize = 6;
@@ -289,7 +289,7 @@ const MindMapTree = defineComponent<MindMapTree>(
       return subTreeInstance.value?.getRootNodeInstance().getRect();
     }));
 
-    
+
     const getChildrenNodeRect = (childrenRects: Ref<any[]>) => {
       const maxWidth = childrenRects.value.reduce((max, rect: Rect) => {
         if (rect?.width > max) {
@@ -324,11 +324,13 @@ const MindMapTree = defineComponent<MindMapTree>(
       return rect;
     }
 
-    const updateSiblingPosition = async (parentComponentInstance: any) => {
+    const updateAllCSubTreesInCurrent = async (parentComponentInstance: any) => {
       const childrenSubTree = parentComponentInstance.exposed.childrenSubTrees;
       if (childrenSubTree && (
         !allChildrenSubTreesInCurrent.value || (childrenSubTree.length > allChildrenSubTreesInCurrent.value.length)
       )) {
+        console.log(((new Date()).getTime()));
+        
         allChildrenSubTreesInCurrent.value = childrenSubTree;
       }
     }
@@ -341,7 +343,22 @@ const MindMapTree = defineComponent<MindMapTree>(
           const nodeHasChildrens = childrenSubTree.filter((subTree: Ref<SubTreeType>) => {
             return subTree.value.childrenRectArea;
           }).map((item: any) => item.value);
-          nodeHasChildrens[1] && adjustSiblingChild(nodeHasChildrens[0], nodeHasChildrens[1], nodeHasChildrens.slice(1));
+          // 初始触发
+          nodeHasChildrens[1] && await adjustSiblingChild(nodeHasChildrens[0], nodeHasChildrens[1], nodeHasChildrens.slice(1));
+          // todo: 后续更新
+          for (let i = 1; i < nodeHasChildrens.length; i++) {
+            await nextTick();
+            const childrenSubTree = allChildrenSubTreesInCurrent.value;
+            const newNodeHasChildrens = childrenSubTree.filter((subTree: Ref<SubTreeType>) => {
+              return subTree.value.childrenRectArea;
+            }).map((item: any) => item.value);
+            const nodeHasChildrensRects = newNodeHasChildrens.map((item: any) => item.childrenRectArea);
+            const rects = allChildrenSubTreesInCurrent.value.map((item: any) => item.value.childrenRectArea)
+            if (newNodeHasChildrens[i + 1]) {
+              await adjustSiblingChild(newNodeHasChildrens[i], newNodeHasChildrens[i + 1], newNodeHasChildrens.slice(i + 1));
+            }
+            await nextTick();
+          }
         }
       }
     })
@@ -360,7 +377,7 @@ const MindMapTree = defineComponent<MindMapTree>(
         if (!childrenRectArea.value) {
           childrenRectArea.value = rect;
         }
-        await updateSiblingPosition(parentComponentInstance);
+        await updateAllCSubTreesInCurrent(parentComponentInstance);
         if (rect) {
           emit("updateSubtreeRect", {
             childRect: rect,
@@ -399,8 +416,10 @@ const MindMapTree = defineComponent<MindMapTree>(
     );
     const showChild = inject<Ref<Boolean>>(showChildrenSymbol)!;
     const childrenRectConfig = computed(
-      () =>
-        childrenRectArea.value && {
+      () => {
+        console.log('children rect',childrenRectArea.value);
+        
+        return childrenRectArea.value && {
           points: [
             childrenRectArea.value.x,
             childrenRectArea.value.y,
@@ -415,6 +434,7 @@ const MindMapTree = defineComponent<MindMapTree>(
           ],
           dash: [10, 5],
         }
+      }
     );
 
     return () => (
