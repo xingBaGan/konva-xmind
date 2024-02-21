@@ -150,7 +150,7 @@ const MindMapTree = defineComponent<MindMapTree>(
       console.log('update', node.title, offsetY);
 
       if (offset > lastOffset.value) {
-        lastOffset.value = offsetY;
+        lastOffset.value = lastOffset.value + offsetY;
         // lastOffset.value = lastOffset.value + offset;
         props.rootNode.rootPos = reactive({
           ...props.rootNode.rootPos,
@@ -262,6 +262,7 @@ const MindMapTree = defineComponent<MindMapTree>(
             onUpdateSubtreeRect={(payload: SubTreeRectPayload) => {
               childrenSubtreeRectArea.value = payload.childRect;
               updateChildrenSubtreeRectArea();
+              updateAllCSubTreesInCurrentC(currentComponentInstance);
             }}
             onUpdateRootNode={updateChildrenNode}
           ></MindMapTree>
@@ -284,6 +285,10 @@ const MindMapTree = defineComponent<MindMapTree>(
       }
     }
 
+    const pushEvent = ()=>{
+      console.log('evnet', currentComponentInstance);
+      
+    }
 
     const childrenRects = computed(() => childrenSubTrees.map((subTreeInstance) => {
       return subTreeInstance.value?.getRootNodeInstance().getRect();
@@ -324,16 +329,15 @@ const MindMapTree = defineComponent<MindMapTree>(
       return rect;
     }
 
-    const updateAllCSubTreesInCurrent = async (parentComponentInstance: any) => {
-      const childrenSubTree = parentComponentInstance.exposed.childrenSubTrees;
+    const updateAllCSubTreesInCurrentC = async (curInstance: any) => {
+      const childrenSubTree = curInstance.exposed.childrenSubTrees;
       if (childrenSubTree && (
         !allChildrenSubTreesInCurrent.value || (childrenSubTree.length > allChildrenSubTreesInCurrent.value.length)
       )) {
-        console.log(((new Date()).getTime()));
-        
         allChildrenSubTreesInCurrent.value = childrenSubTree;
       }
     }
+    
 
     watch([allChildrenSubTreesInCurrent], async () => {
       if (allChildrenSubTreesInCurrent.value) {
@@ -375,9 +379,10 @@ const MindMapTree = defineComponent<MindMapTree>(
         childrenSubtreeRectArea.value = rect;
         updateChildrenSubtreeRectArea();
         if (!childrenRectArea.value) {
+          console.log('rect', node.title, rect);
+          
           childrenRectArea.value = rect;
         }
-        await updateAllCSubTreesInCurrent(parentComponentInstance);
         if (rect) {
           emit("updateSubtreeRect", {
             childRect: rect,
@@ -417,9 +422,7 @@ const MindMapTree = defineComponent<MindMapTree>(
     const showChild = inject<Ref<Boolean>>(showChildrenSymbol)!;
     const childrenRectConfig = computed(
       () => {
-        console.log('children rect',childrenRectArea.value);
-        
-        return childrenRectArea.value && {
+        return  childrenRectArea.value && {
           points: [
             childrenRectArea.value.x,
             childrenRectArea.value.y,
@@ -516,10 +519,10 @@ const MindMapTree = defineComponent<MindMapTree>(
           showChild.value && childrenRectConfig.value && (
             <>
               <v-line
-                config={{
+                config={reactive({
                   ...childrenRectConfig.value,
-                  stroke: "blue",
-                }}
+                  stroke: "yellow",
+                })}
               ></v-line>
             </>
           )}
