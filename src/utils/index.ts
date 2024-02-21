@@ -13,7 +13,7 @@ export async function adjustSiblingChild(currentNode: SubTreeType, siblingNode: 
   if (!(currentNode && siblingNode && currentNode.rootNode && siblingNode.rootNode)) return;
   const topRect = currentNode.childrenSubtreeRectArea;
   const bottomRect = siblingNode.childrenSubtreeRectArea;
-  const offsetY = getOffsetYWhenInRange(topRect, bottomRect);
+  const offsetY = getOffsetYWhenInRange(topRect, bottomRect);  
   if(offsetY > 0) {
     for (let index = 0; index < restArr.length; index++) {
       const element = restArr[index];

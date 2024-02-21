@@ -73,12 +73,13 @@ export const useMindTreeStore = defineStore("mindTree", () => {
     return levelMaxTextLength[level];
   }
 
-  const updateNodeInstance = (id: string, instance: TreeNodeType) => {
+  const updateNodeInstance = (id: string, instance: TreeNodeType, subTreeInstance: SubTreeType) => {
     const treeNode = DFSTravelArr.value.find((node) => {
       return id === node.id;
     });
     if (!treeNode) return;
     treeNode.instance = instance;
+    // treeNode.subTreeInstance = JSON.parse(JSON.stringify(subTreeInstance));
   };
 
   const twoNodes = ref<any>([]);

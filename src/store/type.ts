@@ -13,6 +13,7 @@ export interface Topic {
     attached: Topic[];
   };
   instance?: TreeNodeType;
+  subTreeInstance?: SubTreeType;
 }
 export interface RootTopic extends Topic {
   structureClass: string;
