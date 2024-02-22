@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import Main from './components/Main.vue'
+import Main from './view/main.vue'
 import styleContext from './context/styleContext'
 import globalContext from './context/global'
 const props = defineProps(['data']);
@@ -8,7 +8,7 @@ const props = defineProps(['data']);
 <template>
   <globalContext>
     <styleContext>
-      <Main :data="props.data"></Main>
+      <Main :f="props.data"></Main>
     </styleContext>
   </globalContext>
 </template>

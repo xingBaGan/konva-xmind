@@ -2,6 +2,7 @@ import { reactive, defineComponent, inject, computed, ref, effect } from "vue";
 import { colorsSymbol } from "../context/styleContext";
 import { lighten } from "polished";
 import { useMindTreeStore } from "../store/mindTree";
+import { isDev } from "../constants/index";
 import type { ComponentPublicInstance } from 'vue';
 export type MindMapNode = {
   text?: string;
@@ -148,8 +149,6 @@ export default defineComponent<MindMapNode>(
       ...nodeStyle,
     }));
 
-    // const isDev = !import.meta.env.PROD;
-const isDev = true
     const circle = computed(() => ({
       x: props.x,
       y: props.y,
@@ -219,7 +218,7 @@ const isDev = true
     function getRect() {
       if (rectRef.value) {
         const node = rectRef.value.getNode();
-        const Rect = node.getClientRect();        
+        const Rect = node.getClientRect();
         return Rect;
       }
       return null;

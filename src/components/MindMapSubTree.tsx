@@ -21,7 +21,8 @@ import { useMindTreeStore } from "../store/mindTree";
 import MindMapLines from "./MindMapLines";
 import type { TreeNodeType } from "../store/type";
 import { adjustSiblingChild } from '../utils/index'
-import { showChildrenSymbol } from '../context/global'
+import { showChildrenSymbol } from '../context/global';
+import { isDev } from "../constants/index";
 type MindMapNode = {
   title: string;
 };
@@ -391,8 +392,6 @@ const MindMapTree = defineComponent<MindMapTree>(
         }
       }
     });
-    // const isDev = !import.meta.env.PROD;
-    const isDev = true
     const subTreeDebugMessage = computed(
       () =>
         `${JSON.stringify(node.childrenRect)} \n ${JSON.stringify(
